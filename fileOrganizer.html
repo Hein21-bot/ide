@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<title>JS File Organizer</title>
+
+<head>
+
+  <!--This code was created by Teg Louis. This is a JS file organizer for a IOT IDE, so that way it works regardless of operating system, browser, device, or wifi connectivity.-->
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <title>Romogi</title>
+  <meta name="description" content="This is a bar code animation.">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="romogi-favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="romogi-favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="romogi-favicons/favicon-16x16.png">
+  <link rel="manifest" href="romogi-favicons/site.webmanifest">
+  <link rel="shortcut icon" href="romogi-favicons/favicon.ico" type="image/x-icon" />
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    user-select: none;
+    transition: .2s all;
+  }
+
+  body {
+    padding-top: 77px;
+  }
+
+  main {
+    padding: 20px 50px;
+  }
+
+  .folder *,
+  .file * {
+    width: 100px;
+  }
+
+  .folder,
+  .file {
+    float: left;
+    width: 100px;
+    height: 152px;
+    padding: 20px;
+    margin-right: 50px;
+    margin-bottom: 70px;
+    border-radius: 2px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .folder:hover h1 {
+    display: none;
+  }
+
+  .folder:hover p.cooltip {
+    opacity: 1;
+    top: -35px;
+    /* z-index: 99; */
+
+  }
+
+  .folder *,
+  .file * {
+    text-align: center;
+  }
+
+  .folder i,
+  .file i {
+    margin: 0;
+    font-size: 100px;
+    color: #607D8B;
+  }
+
+  .folder h1,
+  .file h1 {
+    position: relative;
+    display: block;
+    top: -37px;
+    font-size: 20px;
+    font-weight: 400;
+  }
+
+  .folder p.cooltip {
+    position: relative;
+    top: -25px;
+    /* left: -50%; */
+    /* margin-left: 35px; */
+    background: #212121;
+    font-size: 15px;
+    color: white;
+    border-radius: 4px;
+    padding: 10px;
+    /* padding-right: 30px; */
+    width: 100px;
+    opacity: 0;
+  }
+
+  .folder p.cooltip:before {
+    content: '';
+    position: absolute;
+    display: block;
+    top: -4px;
+    left: 50%;
+    margin-left: -5px;
+    height: 10px;
+    width: 10px;
+    border-radius: 2px;
+    background-color: #212121;
+    transform: rotate(45deg);
+  }
+
+  div.properties {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    width: 300px;
+    background-color: white;
+  }
+
+  div.properties:before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 300px;
+    bottom: 0;
+    background-color: #212121;
+    opacity: .5;
+    overflow: hidden;
+  }
+
+  div.properties img {
+    position: relative;
+    top: -1px;
+    left: -1px;
+    width: 110%;
+    height: 200px;
+    filter: blur(2px);
+  }
+
+  div.properties h1 {
+    position: relative;
+    width: 100%;
+    text-align: left;
+    margin-left: 20px;
+    color: white;
+  }
+
+  header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    background-color: #2196F3;
+    color: white;
+    display: flex;
+    align-items: center;
+  }
+
+  header h1 {
+    font-weight: 400;
+  }
+
+  header span {
+    flex: 1;
+  }
+
+  header i {
+    margin: 0 10px;
+    cursor: pointer;
+  }
+
+  header i:nth-child(1) {
+    margin: 0 20px;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>
+
+<body>
+
+  <header>
+    <i class="material-icons icon-menu">menu</i>
+    <h1>Files</h1>
+    <span></span>
+    <i class="material-icons">add</i>
+    <i class="material-icons">more_vert</i>
+  </header>
+
+  <main>
+    <div class="organizer" id="organizer">
+
+    </div>
+    <!-- <div class="files" id="files" class="hidden"> -->
+
+    </div>
+  </main>
+
+  <script>
+    const FileSystem = {
+      "Documents": {
+
+      },
+      "Downloads": {
+
+      },
+      "Photos": {
+
+      }
+    }
+
+  </script>
+
+
+</body>
+
+<script src="file.js"></script>
+<script>
+  function handleGetFileList() {
+    getFiles('./File-Organizer').then(data => {
+      createElement(data)
+
+    })
+
+  }
+
+  function displayFolderData(folder) {
+    if (folder.type == 'Folder') {
+      getFiles(`./${folder.path}`).then(data => {
+        createElement(data)
+      })
+    } else {
+      localStorage.setItem('file-loc', JSON.stringify(`./${folder.path}`)); 
+      window.location.href = "http://localhost:5500/"
+    }
+  }
+
+  async function createElement(data) {
+    console.log(document.getElementById('organizer').children.length)
+    document.getElementById('organizer').replaceChildren()
+    // Get the organizer div
+    const organizerDiv = document.getElementById('organizer');
+
+    // Map the files to elements and append them to the organizer
+    data.forEach(file => {
+      organizerDiv.appendChild(createFileElement(file));
+    });
+  }
+
+  function createFileElement(file) {
+    // Create the main .folder div
+    const folderDiv = document.createElement('div');
+    folderDiv.className = file.type === 'Folder' ? 'folder' : 'file';
+    folderDiv.onclick = () => displayFolderData(file);
+
+    // Create the icon
+    const icon = document.createElement('img');
+    // icon.className = 'material-icons';
+    icon.style.marginBottom = '30px'
+    icon.src = file.type === 'Folder' ? 'http://romogi.com/file-icon.svg' : 'http://romogi.com/document.svg';  // Choose icon based on type
+
+
+    // Create the <h1> for the name
+    const name = document.createElement('h1');
+    name.textContent = file.name;
+
+    // Append the icon and name to the main div
+    folderDiv.appendChild(icon);
+    folderDiv.appendChild(name);
+
+    if (file.type === 'Folder') {
+      // Create the tooltip <p> element
+      const toolTip = document.createElement('p');
+      toolTip.className = 'cooltip';
+      toolTip.textContent = `${file.children?.length || 0} folders / ${file.children?.filter(child => child.type === 'file').length || 0} files`;
+      folderDiv.appendChild(toolTip);
+    }
+
+
+    return folderDiv;
+  }
+
+  handleGetFileList()
+</script>
+
+</html>

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>DHTML IDE</title>
+  <!-- Author: Teg Louis -->
+  <!--This is a super simple IDE that can run in the browser, desktop, or mobile device reqardless of operating system. It does not require declaring path variables. -->
+
+  <meta charset="utf-8">
+  <meta name="description"
+    content="This is a Framework/IDE that uses restricted vanilla DHTML that uses can draw a website and keep code organized.">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="romogi-favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="romogi-favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="romogi-favicons/favicon-16x16.png">
+  <link rel="manifest" href="romogi-favicons/site.webmanifest">
+  <link rel="shortcut icon" href="romogi-favicons/favicon.ico" type="image/x-icon">
+
+
+  <style type="text/css">
+    :root {
+      --projectnamecaretcolor: transparent;
+    }
+
+    /*General styles for body*/
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0 0;
+      font-family: Helvetica, Arial, sans-serif;
+      background: #eee;
+      color: #222;
+      /* overflow: hidden; */
+    }
+
+
+    #titlebar {
+      position: fixed;
+      top: 0;
+      right: 0vw;
+      width: 100%;
+      height: 3em;
+      margin: 0;
+      padding: 0 0 0 0;
+      background: #333;
+      color: #eee;
+      box-shadow: 0 -1px rgba(0, 0, 0, .5) inset;
+      z-index: 5;
+    }
+
+    #projectname {
+      text-overflow: clip;
+      white-space: nowrap;
+      overflow: hidden;
+      cursor: pointer;
+      line-height: 3em;
+      display: block;
+      margin: auto;
+      text-align: left;
+      padding: 0 0 0 0;
+      position: absolute;
+      top: 0;
+      left: 3vw;
+      min-width: 10vw;
+      max-width: 40vw;
+      height: 3em;
+      font-weight: 700;
+    }
+
+    /*Style for the first level menu bar*/
+    ul#menu {
+      position: fixed;
+      top: 0;
+      right: 1vw;
+      width: 20%;
+      height: 3em;
+      margin: 0;
+      padding: 0 0 0 0;
+      background: #333;
+      color: #eee;
+      box-shadow: 0 -1px rgba(0, 0, 0, .5) inset;
+      user-select: none;
+      /* supported by Chrome and Opera */
+      -webkit-user-select: none;
+      /* Safari */
+      -khtml-user-select: none;
+      /* Konqueror HTML */
+      -moz-user-select: none;
+      /* Firefox */
+      -ms-user-select: none;
+      /* Internet Explorer/Edge */
+    }
+
+    li {
+      float: left;
+      list-style-type: none;
+      position: relative;
+    }
+
+    label {
+      position: relative;
+      display: block;
+      padding: 0 18px 0 12px;
+      line-height: 3em;
+      transition: background 0.3s;
+      cursor: pointer;
+    }
+
+    label:after {
+      content: "";
+      position: absolute;
+      display: block;
+      top: 50%;
+      right: 5px;
+      width: 0;
+      height: 0;
+      border-top: 4px solid rgba(255, 255, 255, .5);
+      border-bottom: 0 solid rgba(255, 255, 255, .5);
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      transition: border-bottom .1s, border-top .1s .1s;
+    }
+
+    label:hover,
+    input:checked~label {
+      background: rgba(0, 0, 0, .3);
+    }
+
+    input:checked~label:after {
+      border-top: 0 solid rgba(255, 255, 255, .5);
+      border-bottom: 4px solid rgba(255, 255, 255, .5);
+      transition: border-top .1s, border-bottom .1s .1s;
+    }
+
+    /*hide the inputs*/
+    input {
+      display: none
+    }
+
+    /*show the second levele menu of the selected voice*/
+    input:checked~ul.submenu {
+      max-height: 50vw;
+      transition: max-height 0.25s ease-in;
+    }
+
+    /*style for the second level menu*/
+    ul.submenu {
+      max-height: 0;
+      padding: 0;
+      overflow: hidden;
+      list-style-type: none;
+      background: #444;
+      box-shadow: 0 0 1px rgba(0, 0, 0, .3);
+      transition: max-height 0.25s ease-out;
+      position: absolute;
+      min-width: 100%;
+    }
+
+    ul.submenu li {
+      display: block;
+      padding: 12px;
+      min-width: 100%;
+      color: #ddd;
+      text-decoration: none;
+      box-shadow: 0 -1px rgba(0, 0, 0, .5) inset;
+      transition: background .3s;
+      white-space: nowrap;
+    }
+
+    ul.submenu li:hover {
+      background: rgba(0, 0, 0, .3);
+    }
+
+
+
+
+    @keyframes cursor-blink {
+      0% {
+        opacity: 0;
+      }
+    }
+
+    #projectname::after {
+      content: "";
+      height: 1.5vw;
+      width: .125vw;
+      position: absolute;
+      top: 25%;
+      background: var(--projectnamecaretcolor);
+      display: inline-block;
+      animation: cursor-blink 1.5s steps(2) infinite;
+    }
+
+    [contenteditable="true"]:valid {
+      border: none;
+      outline: none;
+      caret-color: transparent;
+    }
+
+    [contenteditable="true"]:active,
+    [contenteditable="true"]:focus {
+      border: none;
+      outline: none;
+      caret-color: transparent;
+
+    }
+
+    [contenteditable="true"]:focus>style {
+      display: block;
+    }
+
+    #texteditor {
+      cursor: default;
+      position: absolute;
+      top: 2.5em;
+      left: 0%;
+      height: calc(100% - 3em);
+      width: calc(100%);
+      background-color: rgba(0, 34, 64, 1);
+      z-index: 1;
+    }
+
+    pre {
+      display: grid;
+      grid-gap: .5vw;
+      width: 100%;
+      overflow: auto;
+      scrollbar-gutter: stable;
+      scrollbar-color: red yellow;
+      ;
+      white-space: pre-line;
+      color: #888;
+      text-shadow: 1px 1px 2px black;
+      padding: 0px .1vw;
+      border-radius: 0px;
+      counter-reset: line 0;
+      z-index: 1;
+    }
+
+    pre::-webkit-scrollbar {
+      -webkit-appearance: none;
+
+    }
+
+    pre::-webkit-scrollbar:vertical {
+      width: 1vw;
+      height: 0vw;
+    }
+
+    pre::-webkit-scrollbar:horizontal {
+      height: 0vw;
+      height: 1vw;
+    }
+
+    pre::-webkit-scrollbar {
+      -webkit-appearance: none;
+      width: 1vw;
+    }
+
+    pre {
+      scrollbar-width: 1vw;
+      scrollbar-color: #444 #666;
+      scrollbar-gutter: stable;
+    }
+
+    pre::-webkit-scrollbar-track {
+      background: rgba(51, 51, 51, 1);
+    }
+
+    pre::-webkit-scrollbar-thumb {
+      background-color: #444;
+      /*outline: 1px solid #666;*/
+      -webkit-box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+
+    }
+
+    pre::-webkit-scrollbar-corner {
+      background-color: #444;
+      /*outline: 1px solid #666;*/
+      -webkit-box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3);
+    }
+
+
+    pre>span:hover {
+      background-color: rgba(0, 22, 42, 255);
+    }
+
+    pre div {
+      box-sizing: border-box;
+      padding: 0 .5em;
+      margin-right: 10vw;
+
+
+    }
+
+    span {
+      width: 100%;
+    }
+
+    #editor {
+      white-space: pre;
+      word-wrap: normal;
+      font-family: Helvetica;
+      font-weight: 600;
+      /* height: 100%; */
+      overflow: scroll;
+      position: absolute;
+      top: -1%;
+      left: 0%;
+      width: 100%;
+      background-color: rgba(0, 34, 64, 1);
+      z-index: 1;
+      font-size: 1vw;
+      white-space: pre;
+      cursor: default;
+      caret-color: white;
+      background-color: rgba(0, 34, 64, 1);
+    }
+
+    #editor ::selection {
+      background-color: rgba(134, 85, 59, 255);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- use custom scrollbar on left only https://codepen.io/GhostRider/pen/oNvoNv -->
+ 
+  <div id="texteditor">
+    <pre  id="editor" contenteditable="true"
+      spellcheck="false"></pre>
+  </div>
+  <div id="titlebar">
+
+    <div id="projectname" contenteditable="true" spellcheck="false">DTHML EDITOR
+      <svg class="svg-icon" id="editprojectname"
+        style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+        viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M678.854949 37.925925 151.913033 37.925925C67.776878 37.925925 0 105.939719 0 189.838987L0 872.086938C0 956.223137 68.013787 1024 151.913033 1024L834.161006 1024C918.297234 1024 986.074039 955.986205 986.074039 872.086938L986.074039 352.876954 910.22219 428.728803 910.22219 872.086938C910.22219 914.194593 876.305262 948.148151 834.161006 948.148151L151.913033 948.148151C109.805422 948.148151 75.851849 914.231172 75.851849 872.086938L75.851849 189.838987C75.851849 147.731332 109.76885 113.777781 151.913033 113.777781L603.003099 113.777781 678.854949 37.925925ZM320.679497 698.854934 550.775881 633.528042 386.423442 470.180586 320.679497 698.854934ZM935.236535 251.412619 770.882048 88.063035 409.297774 447.421923 573.650213 610.755591 935.236535 251.412619ZM1011.623351 114.198462 908.897353 12.111338C891.877742-4.806437 863.36629-3.885305 845.211136 14.152038L795.896832 63.146942 960.252416 226.495459 1009.563575 177.485707C1027.718729 159.447296 1028.639817 131.118358 1011.623351 114.198462Z">
+        </path>
+      </svg>
+    </div>
+    <ul id="menu">
+
+      <li>
+        <input id="check01" type="checkbox" name="menu">
+        <label for="check01">
+          <svg id="projecticon"
+            style="width: 1em; height: 1em; vertical-align: middle;fill: currentColor;overflow: hidden;" version="1.1"
+            xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+            viewBox="0 0 2634 1362">
+            <g>
+              <g>
+                <polygon points="826.395,1323.248 37,1323.248 184.55,961.749 678.844,961.749"></polygon>
+                <polygon points="1711.698,1323.248 922.302,1323.248 1069.853,961.749 1564.147,961.749"></polygon>
+                <polygon points="2597,1323.248 1807.605,1323.248 1955.156,961.749 2449.45,961.749"></polygon>
+              </g>
+              <g>
+                <polygon points="1269.046,861.749 479.651,861.749 627.202,500.251 1121.496,500.251"></polygon>
+                <polygon points="2154.349,861.749 1364.954,861.749 1512.504,500.251 2006.798,500.251"></polygon>
+              </g>
+              <polygon points="1711.698,400.251 922.302,400.251 1069.853,38.752 1564.147,38.752"></polygon>
+            </g>
+          </svg>
+          Project
+        </label>
+        <ul class="submenu">
+          <li id="newoption" onclick="createNewFile()">
+            <svg class="svg-icon" id="newicon"
+              style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M526.079158 832.28256l-33.015951 20.500916L493.063207 538.727735l276.208762-175.977967 0 132.113947c25.348318 4.021593 49.332569 12.135388 71.257927 23.64349L840.529897 293.712415 465.238488 64.303538 89.922521 293.712415l0 438.795744 375.316991 227.188302 107.936291-65.342194C554.207799 876.531344 538.232966 855.5638 526.079158 832.28256zM430.705997 852.7845 154.497235 681.270195 154.497235 362.750791l276.207739 175.977967L430.704974 852.7845zM189.030749 298.16175l276.207739-142.541437L733.615888 309.307601 465.238488 469.677079 189.030749 298.16175z">
+              </path>
+              <path
+                d="M732.518904 523.158131c-111.322411 0-201.557552 90.234117-201.557552 201.556529 0 111.324458 90.235141 201.559599 201.557552 201.559599 111.324458 0 201.557552-90.235141 201.557552-201.559599C934.076456 613.392248 843.843362 523.158131 732.518904 523.158131zM856.137363 753.675248l-94.643544 0 0 94.65787-57.94676 0 0-94.65787-94.643544 0 0-57.919131 94.643544 0 0-94.65787 57.94676 0 0 94.65787 94.643544 0L856.137363 753.675248z">
+              </path>
+            </svg>
+            New
+          </li>
+          <li id="openoption" onclick="Open()">
+            <svg class="svg-icon" id="openicon"
+              style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M465.60011 214.697704c-82.341788 107.890717-164.678157 215.770596-247.025363 323.64867-29.311278 38.416414-1.918202 93.780555 46.408921 93.780555h494.029051c48.32351 0 75.723811-55.364141 46.394472-93.780555-82.329144-107.878073-164.678157-215.756147-247.014526-323.64867-23.356183-30.600916-69.429147-30.600916-92.792555 0zM243.2007 781.05488h493.675033c19.629958 0 60.473927 5.915358 75.826765-17.04707 17.083194-25.53448-1.197521-59.758666-31.90681-59.758665H287.122461c-19.640796 0-60.475733-5.904521-75.844828 17.057906-17.075969 25.525448 1.201134 59.747828 31.923067 59.747829z">
+              </path>
+            </svg>
+            Open...
+          </li>
+          <li id="runoption" onclick="runCode()">
+            <svg class="svg-icon" id="runicon"
+              style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M730.453333 426.666667 684.373333 349.013333 653.226667 471.466667 759.466667 665.173333 759.466667 938.666667 682.666667 938.666667 682.666667 725.333333 583.253333 592.64 514.986667 785.066667 309.333333 874.666667 264.533333 810.666667 443.306667 705.28 550.826667 284.586667 460.8 312.746667 460.8 469.333333 384 469.333333 384 247.466667 615.253333 175.36 636.586667 171.946667C663.04 171.946667 686.08 186.453333 698.88 207.786667L784.213333 349.866667 938.666667 349.866667 938.666667 426.666667 730.453333 426.666667M725.333333 162.133333C682.666667 162.133333 648.533333 128 648.533333 85.333333 648.533333 42.666667 682.666667 8.533333 725.333333 8.533333 768 8.533333 802.133333 42.666667 802.133333 85.333333 802.133333 128 768 162.133333 725.333333 162.133333M298.666667 384 298.666667 469.333333 170.666667 469.333333C147.2 469.333333 128 450.133333 128 426.666667 128 403.2 147.2 384 170.666667 384L298.666667 384M394.666667 554.666667 373.333333 640 213.333333 640C189.866667 640 170.666667 620.8 170.666667 597.333333 170.666667 573.866667 189.866667 554.666667 213.333333 554.666667L394.666667 554.666667M298.666667 213.333333 298.666667 298.666667 128 298.666667C104.533333 298.666667 85.333333 279.466667 85.333333 256 85.333333 232.533333 104.533333 213.333333 128 213.333333L298.666667 213.333333Z">
+              </path>
+            </svg>
+            Run
+          </li>
+          <li id="saveoption" type="submit" onclick="updateData()">
+
+            <svg class="svg-icon" id="saveicon"
+              style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M994.377154 970.241704a89.210032 89.210032 0 0 1-20.287022 28.54721 91.060315 91.060315 0 0 1-28.679373 18.43674 93.736616 93.736616 0 0 1-35.056239 6.773355H113.015075a93.340126 93.340126 0 0 1-34.957116-6.608151 90.994233 90.994233 0 0 1-28.9437-18.601944 87.657117 87.657117 0 0 1-19.824451-28.150721 86.765017 86.765017 0 0 1-7.599374-35.55185v-534.268972a86.632854 86.632854 0 0 1 7.467211-35.287523 88.615299 88.615299 0 0 1 20.253981-28.547211 90.86207 90.86207 0 0 1 28.712414-18.43674 92.976678 92.976678 0 0 1 35.056239-6.773354h199.334861v89.044828H113.015075l-2.345893 534.268972h799.586216l2.345893-22.269467v-512.131668h-201.548591V311.64038h199.334861a92.514108 92.514108 0 0 1 34.924075 6.60815 91.522885 91.522885 0 0 1 28.976741 18.601944 88.912666 88.912666 0 0 1 19.989655 28.117681 87.524954 87.524954 0 0 1 7.566332 35.58489v534.268972a87.161506 87.161506 0 0 1-7.46721 35.419687z m-660.815054-369.230412h133.682885V-0.033041h89.210032v601.044333h133.682886l-178.22182 200.359125z">
+              </path>
+            </svg>
+            Save
+          </li>
+          <li id="saveasoption" onclick="saveAs()">
+            <svg class="svg-icon" id="saveasicon"
+              style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M730.584615 78.769231v267.815384c0 19.692308-15.753846 37.415385-37.415384 37.415385H273.723077c-19.692308 0-37.415385-15.753846-37.415385-37.415385V78.769231H157.538462C114.215385 78.769231 78.769231 114.215385 78.769231 157.538462v708.923076c0 43.323077 35.446154 78.769231 78.769231 78.769231h708.923076c43.323077 0 78.769231-35.446154 78.769231-78.769231V220.553846L803.446154 78.769231h-72.861539z m137.846154 750.276923c0 19.692308-15.753846 37.415385-37.415384 37.415384H194.953846c-19.692308 0-37.415385-15.753846-37.415384-37.415384V500.184615c0-19.692308 15.753846-37.415385 37.415384-37.415384h636.061539c19.692308 0 37.415385 15.753846 37.415384 37.415384v328.861539zM488.369231 267.815385c0 19.692308 15.753846 37.415385 37.415384 37.415384h90.584616c19.692308 0 37.415385-15.753846 37.415384-37.415384V78.769231h-163.446153l-1.969231 189.046154z">
+              </path>
+            </svg>
+            Save As..
+          </li>
+          <li id="printoption">
+            <svg class="svg-icon" id="printicon"
+              style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M832 896v64c0 35.392-28.608 64-64 64H256a64 64 0 0 1-64-64v-64a192 192 0 0 1-192-192v-192a192 192 0 0 1 192-192V64a64 64 0 0 1 64-64h512c35.392 0 64 28.608 64 64v256c105.984 0 192 85.952 192 192v192c0 106.048-86.016 192-192 192z m-576 64h512V704H256v256zM768 64H256v256h64V128h384v192h64V64zM384 192v128h256V192H384z m384 256h-64v64h64v-64z m0 128H256c-70.656 0-128 57.344-128 128v64h64v-64a64 64 0 0 1 64-64h512c35.392 0 64 28.608 64 64v64h64v-64c0-70.656-57.344-128-128-128z m128-128h-64v64h64v-64z"
+                fill=""></path>
+            </svg>
+            Print
+          </li>
+        </ul>
+      </li>
+      <li>
+        <input id="check02" type="checkbox" name="menu">
+        <label for="check02">
+          <svg class="svg-icon" id="editfiles"
+            style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+            viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M678.854949 37.925925 151.913033 37.925925C67.776878 37.925925 0 105.939719 0 189.838987L0 872.086938C0 956.223137 68.013787 1024 151.913033 1024L834.161006 1024C918.297234 1024 986.074039 955.986205 986.074039 872.086938L986.074039 352.876954 910.22219 428.728803 910.22219 872.086938C910.22219 914.194593 876.305262 948.148151 834.161006 948.148151L151.913033 948.148151C109.805422 948.148151 75.851849 914.231172 75.851849 872.086938L75.851849 189.838987C75.851849 147.731332 109.76885 113.777781 151.913033 113.777781L603.003099 113.777781 678.854949 37.925925ZM320.679497 698.854934 550.775881 633.528042 386.423442 470.180586 320.679497 698.854934ZM935.236535 251.412619 770.882048 88.063035 409.297774 447.421923 573.650213 610.755591 935.236535 251.412619ZM1011.623351 114.198462 908.897353 12.11138C891.877742-4.806437 863.36629-3.885305 845.211136 14.152038L795.896832 63.146942 960.252416 226.495459 1009.563575 177.485707C1027.718729 159.447296 1028.639817 131.118358 1011.623351 114.198462Z">
+            </path>
+          </svg>
+          Edit</label>
+        <ul class="submenu">
+          <li id="undooption" onclick="undo()">
+            <svg class="svg-icon" id="undoicon"
+              style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M959.8 789.8c0-39.2 8.4-194.2-113.6-317.4-80.8-81.4-183.8-123.4-326.8-131-4.2-0.2-7.6-3.8-7.6-8V168c0-6.4-7-10.2-12.4-6.8L67.6 445.6c-4.8 3.2-4.8 10.2 0 13.4l431.8 284.4c5.4 3.6 12.4-0.2 12.4-6.8v-163.2c0-4.6 3.8-8.2 8.4-8 88.2 3.4 139 21.8 194.2 46.4 72.2 32.4 145.8 101.8 189 167 26.2 39.8 38.4 67.8 42.8 79.4 1.4 3.4 4.6 5.6 8.2 5.6h5.8c-0.2-23.4-0.4-53.4-0.4-74z">
+              </path>
+            </svg>
+            Undo
+          </li>
+          <li id="redooption" onclick="redo()">
+
+            <svg class="svg-icon" id="redoicon"
+              style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M64 864h5.8c3.6 0 7-2.2 8.2-5.6 4.4-11.4 16.6-39.6 42.8-79.4 43-65.4 116.8-134.8 189-167 55.2-24.8 106-43 194.2-46.4 4.6-0.2 8.4 3.4 8.4 8v163.2c0 6.4 7.2 10.2 12.4 6.8l431.8-284.4c4.8-3.2 4.8-10.2 0-13.4l-432-284.4c-5.4-3.6-12.4 0.2-12.4 6.8v165.2c0 4.4-3.4 7.8-7.6 8-143.2 7.6-246.2 49.6-326.8 131-122 123.2-113.6 278.2-113.6 317.4 0 20.6-0.2 50.6-0.2 74.2z">
+              </path>
+            </svg>
+            Redo
+          </li>
+          <li id="cutoption" onclick="cut()">
+            <svg class="svg-icon" id="cuticon"
+              style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M548.571429 512q14.857143 0 25.714285 10.857143t10.857143 25.714286-10.857143 25.714285-25.714285 10.857143-25.714286-10.857143-10.857143-25.714285 10.857143-25.714286 25.714286-10.857143z m171.428571 36.571429l289.714286 227.428571q16 11.428571 14.285714 32-2.857143 20-20 29.142857l-73.142857 36.571429q-7.428571 4-16.571429 4-9.714286 0-17.714285-4.571429l-394.285715-221.142857-62.857143 37.714286q-4.571429 2.285714-6.857142 2.857143 8 28 5.714285 55.428571-4 44-32 84.285714T330.857143 902.857143q-75.428571 48-158.285714 48-77.714286 0-126.857143-44.571429-51.428571-48-45.142857-118.285714 4-43.428571 32-84t74.857142-70.857143q75.428571-48 158.857143-48 47.428571 0 86.285715 17.714286 5.142857-7.428571 12.571428-12.571429l69.714286-41.714285-69.714286-41.714286q-7.428571-5.142857-12.571428-12.571429-38.857143 17.714286-86.285715 17.714286-83.428571 0-158.857143-48-46.857143-30.285714-74.857142-70.857143T0.571429 309.142857q-2.857143-33.714286 8.857142-64.571428T45.714286 191.428571q48.571429-45.142857 126.857143-45.142857 82.857143 0 158.285714 48 47.428571 29.714286 75.428571 70.285715t32 84.571428q2.285714 27.428571-5.714285 55.428572 2.285714 0.571429 6.857142 2.857142l62.857143 37.714286 394.285715-221.142857q8-4.571429 17.714285-4.571429 9.142857 0 16.571429 4l73.142857 36.571429q17.142857 9.142857 20 29.142857 1.714286 20.571429-14.285714 32zM330.857143 400q26.285714-24 12-61.714286T282.285714 271.428571q-52.571429-33.714286-109.714285-33.714285-42.285714 0-64.571429 20.571428-26.285714 24-12 61.714286t60.571429 66.857143q52.571429 33.714286 109.714285 33.714286 42.285714 0 64.571429-20.571429z m-48.571429 425.714286q46.285714-29.142857 60.571429-66.857143t-12-61.714286q-22.285714-20.571429-64.571429-20.571428-57.142857 0-109.714285 33.714285-46.285714 29.142857-60.571429 66.857143t12 61.714286q22.285714 20.571429 64.571429 20.571428 57.142857 0 109.714285-33.714285z m101.714286-350.285715l54.857143 33.142858v-6.285715q0-20.571429 18.857143-32l8-4.571428-45.142857-26.857143-14.857143 14.857143q-1.714286 1.714286-5.714286 6.285714t-6.857143 6.857143q-1.142857 1.142857-2.285714 2t-1.714286 1.428571z m128 128l54.857143 18.285715 420.571428-329.142857-73.142857-36.571429-438.857143 246.285714v64.571429l-91.428571 54.857143 5.142857 4.571428q1.142857 1.142857 4 3.428572 2.285714 2.285714 6.285714 6.857143t6.285715 6.857142l14.857143 14.857143z m402.285714 237.714286l73.142857-36.571428-297.142857-233.142858-101.142857 78.857143q-1.142857 1.714286-7.428571 4z">
+              </path>
+            </svg>
+            Cut
+          </li>
+          <li id="copyoption" onclick="copy()">
+            <svg class="svg-icon" id="copyicon"
+              style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M640 960 192 960C160 960 128 934.4 128 896L128 320C128 281.6 160 256 192 256L192 192C121.6 192 64 249.6 64 320L64 896C64 966.4 121.6 1024 192 1024L640 1024C710.4 1024 768 966.4 768 896L704 896C704 928 672 960 640 960ZM704 0 384 0C313.6 0 256 57.6 256 128L256 704C256 774.4 313.6 832 384 832L832 832C902.4 832 960 774.4 960 704L960 256 704 0ZM608 768 352 768C332.8 768 320 755.2 320 736 320 716.8 332.8 704 352 704L608 704C627.2 704 640 716.8 640 736 640 755.2 627.2 768 608 768ZM800 640 352 640C332.8 640 320 627.2 320 608 320 588.8 332.8 576 352 576L800 576C819.2 576 832 588.8 832 608 832 627.2 819.2 640 800 640ZM800 512 352 512C332.8 512 320 499.2 320 480 320 460.8 332.8 448 352 448L800 448C819.2 448 832 460.8 832 480 832 499.2 819.2 512 800 512ZM704 256 704 96 864 256 704 256Z">
+              </path>
+            </svg>
+            Copy
+          </li>
+          <li id="pasteoption" onclick="paste()">
+            <svg class="svg-icon" id="pasteicon"
+              style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M832 320l0-160c0-17.6-14.4-32-32-32l-224 0 0-64c0-35.2-28.8-64-64-64l-128 0c-35.2 0-64 28.8-64 64l0 64-224 0c-17.6 0-32 14.4-32 32l0 640c0 17.6 14.4 32 32 32l288 0 0 192 448 0 192-192 0-512-192 0zM384 64.128c0.032-0.032 0.064-0.064 0.128-0.128l127.776 0c0.032 0.032 0.096 0.064 0.128 0.128l0 63.872-128 0 0-63.872zM192 256l0-64 512 0 0 64-512 0zM832 933.504l0-101.504 101.504 0-101.504 101.504zM960 768l-192 0 0 192-320 0 0-576 512 0 0 384z">
+              </path>
+            </svg>
+            Paste
+          </li>
+          <li id="selectalloption" onclick="selectAll()">
+            <svg class="svg-icon" id="selectallicon"
+              style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M928 704l-160 0L768 288c0-19.2-12.8-32-32-32L320 256 320 96c0-19.2-12.8-32-32-32S256 76.8 256 96l0 160L96 256C76.8 256 64 268.8 64 288s12.8 32 32 32l160 0 0 416c0 19.2 12.8 32 32 32l416 0 0 160c0 19.2 12.8 32 32 32s32-12.8 32-32l0-160 160 0c19.2 0 32-12.8 32-32S947.2 704 928 704zM320 704 320 320l384 0 0 384L320 704z">
+              </path>
+            </svg>
+            Select All
+          </li>
+        </ul>
+      </li>
+      <li>
+        <input id="check03" type="checkbox" name="menu">
+        <label for="check03">
+          <svg class="svg-icon" id="modeicon"
+            style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+            viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+            <path d="M169.8 169v686H856V169H169.8zM810 215v146.7H215.8V215H810zM215.8 809V407.7H810V809H215.8z"></path>
+            <path
+              d="M256.9 267.2h64v46h-64zM384.9 267.2h64v46h-64zM512.9 267.2h64v46h-64zM448.9 489.5h255.2v46H448.9zM320.1 585.3h384v46h-384zM320.1 681.1h384v46h-384z">
+            </path>
+          </svg>
+          Mode
+        </label>
+        <ul class="submenu">
+          <li id="mathoption">
+            <svg class="svg-icon" id="mathicon"
+              style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <path d="M64 64m64 0l384 0q64 0 64 64l0 0q0 64-64 64l-384 0q-64 0-64-64l0 0q0-64 64-64Z"></path>
+              <path d="M64 832m64 0l384 0q64 0 64 64l0 0q0 64-64 64l-384 0q-64 0-64-64l0 0q0-64 64-64Z"></path>
+              <path
+                d="M148.854281 42.072792m33.914833 54.275078l237.40383 379.925547q33.914833 54.275078-20.360245 88.189911l0 0q-54.275078 33.914833-88.189911-20.360245l-237.403831-379.925547q-33.914833-54.275078 20.360246-88.189912l0 0q54.275078-33.914833 88.189911 20.360246Z">
+              </path>
+              <path
+                d="M39.947907 915.97189m33.943247-54.257313l237.602726-379.801191q33.943247-54.257313 88.20056-20.314066l0 0q54.257313 33.943247 20.314066 88.200559l-237.602726 379.801191q-33.943247 54.257313-88.20056 20.314066l0 0q-54.257313-33.943247-20.314066-88.200559Z">
+              </path>
+              <path
+                d="M579.264317 263.095197m45.254834 45.254834l316.783837 316.783838q45.254834 45.254834 0 90.509668l0 0q-45.254834 45.254834-90.509668 0l-316.783837-316.783838q-45.254834-45.254834 0-90.509668l0 0q45.254834-45.254834 90.509668 0Z">
+              </path>
+              <path
+                d="M489.022961 670.0189m45.254834-45.254834l316.783838-316.783838q45.254834-45.254834 90.509668 0l0 0q45.254834 45.254834 0 90.509668l-316.783838 316.783838q-45.254834 45.254834-90.509668 0l0 0q-45.254834-45.254834 0-90.509668Z">
+              </path>
+            </svg>
+            Math
+          </li>
+          <li id="codeoption">
+            <svg class="svg-icon" id="codeicon"
+              style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M181 357.5V181.2h176.4c14.3 0 25.9-11.6 25.9-25.9v-31.1c0-14.3-11.6-25.9-25.9-25.9H118c-11 0-20 9-20 20v239.4c0 14.3 11.6 25.9 25.9 25.9H155c14.4-0.1 26-11.7 26-26.1zM668.6 181.2H845v176.4c0 14.3 11.6 25.9 25.9 25.9H902c14.3 0 25.9-11.6 25.9-25.9V118.2c0-11-9-20-20-20H668.6c-14.3 0-25.9 11.6-25.9 25.9v31.1c0 14.3 11.6 26 25.9 26zM357.4 845.2H181V668.8c0-14.3-11.6-25.9-25.9-25.9H124c-14.3 0-25.9 11.6-25.9 25.9v239.4c0 11 9 20 20 20h239.4c14.3 0 25.9-11.6 25.9-25.9v-31.1c-0.1-14.4-11.7-26-26-26zM845 668.8v176.4H668.6c-14.3 0-25.9 11.6-25.9 25.9v31.1c0 14.3 11.6 25.9 25.9 25.9H908c11 0 20-9 20-20V668.8c0-14.3-11.6-25.9-25.9-25.9H871c-14.4 0-26 11.6-26 25.9z">
+              </path>
+              <rect x="256" y="474.5" width="512" height="75"></rect>
+            </svg>
+            Code
+          </li>
+          <li id="fullscreenoption">
+            <svg class="svg-icon" id="fullscreenicon"
+              style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M237.248 192H352a32 32 0 1 0 0-64H160a32 32 0 0 0-32 32v192a32 32 0 1 0 64 0v-114.752l137.36 137.36a32 32 0 1 0 45.232-45.264L237.248 192zM832 237.248V352a32 32 0 1 0 64 0V160a32 32 0 0 0-32-32H672a32 32 0 1 0 0 64h114.752l-137.36 137.36a32 32 0 1 0 45.264 45.232L832 237.248zM237.248 832H352a32 32 0 1 1 0 64H160a32 32 0 0 1-32-32V672a32 32 0 1 1 64 0v114.752l137.36-137.36a32 32 0 1 1 45.232 45.264L237.248 832zM832 786.752V672a32 32 0 1 1 64 0v192a32 32 0 0 1-32 32H672a32 32 0 1 1 0-64h114.752l-137.36-137.36a32 32 0 1 1 45.264-45.232L832 786.752z">
+              </path>
+            </svg>
+            Full Screen
+          </li>
+          <li id="wysiwygoption">
+            <svg class="svg-icon" id="WYSIWYGicon"
+              style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M181 357.5V181.2h176.4c14.3 0 25.9-11.6 25.9-25.9v-31.1c0-14.3-11.6-25.9-25.9-25.9H118c-11 0-20 9-20 20v239.4c0 14.3 11.6 25.9 25.9 25.9H155c14.4-0.1 26-11.7 26-26.1zM668.6 181.2H845v176.4c0 14.3 11.6 25.9 25.9 25.9H902c14.3 0 25.9-11.6 25.9-25.9V118.2c0-11-9-20-20-20H668.6c-14.3 0-25.9 11.6-25.9 25.9v31.1c0 14.3 11.6 26 25.9 26zM357.4 845.2H181V668.8c0-14.3-11.6-25.9-25.9-25.9H124c-14.3 0-25.9 11.6-25.9 25.9v239.4c0 11 9 20 20 20h239.4c14.3 0 25.9-11.6 25.9-25.9v-31.1c-0.1-14.4-11.7-26-26-26zM845 668.8v176.4H668.6c-14.3 0-25.9 11.6-25.9 25.9v31.1c0 14.3 11.6 25.9 25.9 25.9H908c11 0 20-9 20-20V668.8c0-14.3-11.6-25.9-25.9-25.9H871c-14.4 0-26 11.6-26 25.9z">
+              </path>
+            </svg>
+            WYSIWYG
+          </li>
+        </ul>
+      </li>
+
+    </ul>
+  </div>
+  <script src="index.js"></script>
+  <script src="file.js"></script>
+</body>
+
+</html>

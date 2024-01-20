@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- ... -->
+</head>
+<body>
+  <!-- Your HTML content here -->
+  
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    socket.on('file-changed', (data) => {
+      console.log('File changed:', data.filename);
+      window.location.reload(true); // force reload from the server
+    });
+  </script>
+</body>
+</html>
