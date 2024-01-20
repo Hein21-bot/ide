@@ -188,6 +188,116 @@
   .hidden {
     display: none;
   }
+
+  /* Create Button styles */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    margin-left: -49px;
+    margin-top: 10px;
+    min-width: 160px;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+  }
+
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+
+  .dropdown a:hover {
+    background-color: #ddd;
+  }
+
+  .show {
+    display: block;
+  }
+
+  /* Breadcrumb styles */
+  ul.breadcrumb {
+    padding: 10px 16px;
+    list-style: none;
+    background-color: #eee;
+  }
+
+  ul.breadcrumb li {
+    display: inline;
+    font-size: 18px;
+  }
+
+  ul.breadcrumb li+li:before {
+    padding: 8px;
+    color: black;
+    content: "/\00a0";
+  }
+
+  ul.breadcrumb li a {
+    color: #0275d8;
+    text-decoration: none;
+  }
+
+  ul.breadcrumb li a:hover {
+    color: #01447e;
+    text-decoration: underline;
+  }
+
+  /* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 30%;
+  height: auto;
+}
+.modal-content label{
+  width: 60px !important;
+  min-width: 60px;
+  display: inline-block;
+}
+.modal-content h4{
+  margin-bottom: 10px;
+}
+.modal-content .div{
+  display: flex;
+  padding: 10px 0px;
+}
+.modal-content input{
+  width: 100%;
+}
+.modal-content button{
+  margin: auto;
+  display: flex;
+}
+.postfix {
+  position: relative;
+  margin-left: 2px;
+  /* top: 0;
+  right: 10px; */
+}
+.div3{
+  display: flex;
+  flex-grow: 1;
+}
 </style>
 
 <body>
@@ -196,29 +306,50 @@
     <i class="material-icons icon-menu">menu</i>
     <h1>Files</h1>
     <span></span>
-    <i class="material-icons">add</i>
+
+    <div class="dropdown">
+      <i onclick="toggleCreateDropdown()" class="material-icons create-btn">add</i>
+      <div id="myDropdown" class="dropdown-content">
+        <a onclick="clickCreate('folder')" href="javascript:;">Create Folder</a>
+        <a onclick="clickCreate('file')" href="javascript:;">Create File</a>
+      </div>
+    </div>
     <i class="material-icons">more_vert</i>
   </header>
 
   <main>
-    <div class="organizer" id="organizer">
-
-    </div>
+    <ul id="breadcrumb" class="breadcrumb"></ul>
+    <div class="organizer" id="organizer"></div>
     <!-- <div class="files" id="files" class="hidden"> -->
 
+      <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div id="myModalContent" class="modal-content">
+        </div>
+      
+      </div>
     </div>
   </main>
 
   <script>
-    const FileSystem = {
-      "Documents": {
 
-      },
-      "Downloads": {
+    
+    window.onclick = function (event) {
+      // Close the dropdown if the user clicks outside of it
+      if (!event.target.matches('.create-btn')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+          }
+        }
+      }
 
-      },
-      "Photos": {
-
+      // When the user clicks anywhere outside of the modal, close it
+      if (event.target == modal) {
+        modal.style.display = "none";
       }
     }
 
@@ -227,29 +358,56 @@
 
 </body>
 
-<script src="file.js"></script>
 <script>
-  function handleGetFileList() {
-    getFiles('./File-Organizer').then(data => {
-      createElement(data)
+  let breadcrumbList = ['File Organizer']
+  async function getFiles(dir) {
+  const baseUrl = "http://localhost:8080/getFolder";
 
+  const queryParams = {
+    dirName: dir,
+  };
+
+  const urlWithQuery = `${baseUrl}?${new URLSearchParams(
+    queryParams
+  ).toString()}`;
+  try {
+    const response = await fetch(urlWithQuery, {
+      method: "GET",
+    });
+    if (response.status != 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  } catch (error) {
+    console.error("Fetch Error:", error);
+  }
+}
+
+  function handleGetFileList() {
+    getFiles('../File-Organizer').then(data => {
+      createElement(data)
     })
 
   }
 
   function displayFolderData(folder) {
     if (folder.type == 'Folder') {
-      getFiles(`./${folder.path}`).then(data => {
+
+      const list = folder.path.split('/')
+      list.shift();
+      breadcrumbList = list;
+      handleLoadBreadcrumb();
+
+      getFiles(`${folder.path}`).then(data => {
         createElement(data)
       })
     } else {
-      localStorage.setItem('file-loc', JSON.stringify(`./${folder.path}`)); 
+      localStorage.setItem('file-loc', JSON.stringify(`${folder.path}`));
       window.location.href = "http://localhost:5500/"
     }
   }
 
   async function createElement(data) {
-    console.log(document.getElementById('organizer').children.length)
     document.getElementById('organizer').replaceChildren()
     // Get the organizer div
     const organizerDiv = document.getElementById('organizer');
@@ -293,7 +451,107 @@
     return folderDiv;
   }
 
-  handleGetFileList()
+  function handleLoadBreadcrumb(){
+    const breadcrumb_ele = document.getElementById('breadcrumb');
+    breadcrumb_ele.replaceChildren();
+
+    for(let i=0; i<breadcrumbList.length; i++){
+      const folder_name = breadcrumbList[i];
+
+      const ele = document.createElement('li');
+      if(i!==breadcrumbList.length-1){
+        const sub_ele = document.createElement('a')
+        sub_ele.href = 'javascript:;';
+        sub_ele.innerText = folder_name;
+        ele.appendChild(sub_ele)
+        ele.onclick = () => {
+          let index = breadcrumbList.indexOf(folder_name);
+          
+          const temp = breadcrumbList.slice(0, index+1);
+          breadcrumbList = temp;
+          
+          handleLoadBreadcrumb();
+          const folder_path = `../${breadcrumbList.join('/')}`;
+          getFiles(`${folder_path}`).then(data => {
+            createElement(data)
+          })
+        };
+      }else{
+        ele.innerText = folder_name;
+      }
+
+      breadcrumb_ele.appendChild(ele);
+
+    }
+    
+  }
+
+  handleGetFileList();
+  handleLoadBreadcrumb();
+
+  function toggleCreateDropdown() {
+    document.getElementById("myDropdown").classList.toggle("show");
+  }
+
+  // Get the modal
+  var modal = document.getElementById("myModal");
+  var modal_content = document.getElementById("myModalContent");
+  function clickCreate(val){
+    let filePath = [...breadcrumbList];
+    filePath.shift()
+    modal_content.replaceChildren();
+
+    const header = document.createElement('h4');
+    header.innerText = `Create ${val.charAt(0).toUpperCase() + val.slice(1)}`
+    modal_content.appendChild(header);
+    const label1 = document.createElement('label')
+    label1.for = 'filepath';
+    label1.innerText = 'Path: ';
+    const input1 = document.createElement('input');
+    input1.id = 'filepath';
+    input1.name = 'filepath';
+    input1.value = './'+ filePath.join('/');
+    input1.disabled = true;
+
+    const label2 = document.createElement('label')
+    label2.for = 'name';
+    label2.innerText = 'Name: ';
+    const input2 = document.createElement('input');
+    input2.id = 'name';
+    input2.name = 'name';
+
+    const div1 = document.createElement('div')
+    div1.className = 'div';
+    div1.appendChild(label1)
+    div1.appendChild(input1)
+
+    const div2 = document.createElement('div')
+    div2.className = 'div';
+    div2.appendChild(label2)
+    // 
+    if(val === 'file'){
+      div2.innerHTML += "<div class='div3'><input id='name' name='name' /><span class='postfix'>.html</span></div>"
+    }else{
+      div2.appendChild(input2)
+    }
+    modal_content.appendChild(div1)
+    modal_content.appendChild(div2)
+    
+
+    const btn = document.createElement('button')
+    btn.innerText = 'Create';
+    btn.onclick = function(){
+      const fullPath = '../'+breadcrumbList.join('/');
+      const name = document.getElementById('name').value + (val==='file' ? '.html' : '')
+      console.log('create folder/file.....\nfilepath = ', fullPath, '\nname = ', name)
+    }
+
+    modal_content.appendChild(btn)
+    modal.style.display = "block";
+  }
 </script>
+
+<!-- <script src="file.js"></script> -->
+<script src="file.js"></script>
 
 </html>
