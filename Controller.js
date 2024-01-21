@@ -183,7 +183,7 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "fileOrganizer.html"));
 });
 
-app.get("/file-organizer", (req, res) => {
+app.get("/ide", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 

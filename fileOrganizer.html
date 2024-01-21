@@ -46,23 +46,23 @@
   .folder,
   .file {
     float: left;
-    width: 100px;
-    height: 152px;
+    /* width: 100px; */
+    /* height: 152px; */
     padding: 20px;
     margin-right: 50px;
     margin-bottom: 70px;
     border-radius: 2px;
-    overflow: hidden;
+    /* overflow: hidden; */
     cursor: pointer;
   }
 
   .folder:hover h1 {
-    display: none;
+    /* display: none; */
   }
 
   .folder:hover p.cooltip {
     opacity: 1;
-    top: -35px;
+    top: -2px;
     /* z-index: 99; */
 
   }
@@ -81,16 +81,16 @@
 
   .folder h1,
   .file h1 {
-    position: relative;
+    /* position: relative; */
     display: block;
-    top: -37px;
+    top: -32px;
     font-size: 20px;
     font-weight: 400;
   }
 
   .folder p.cooltip {
     position: relative;
-    top: -25px;
+    top: -2px;
     /* left: -50%; */
     /* margin-left: 35px; */
     background: #212121;
@@ -298,6 +298,22 @@
   display: flex;
   flex-grow: 1;
 }
+
+/* Delete Folder/File */
+.delete_ele{
+  display: none;
+  position: relative;
+  top: -48px;
+  left: 88px;
+  background: darkgrey;
+  padding: 3px;
+  border-radius: 5px;
+  width: 80px;
+}
+
+.delete_ele:hover{
+  background: rgb(198, 197, 197);
+}
 </style>
 
 <body>
@@ -320,13 +336,11 @@
   <main>
     <ul id="breadcrumb" class="breadcrumb"></ul>
     <div class="organizer" id="organizer"></div>
-    <!-- <div class="files" id="files" class="hidden"> -->
 
+    <!-- Create Folder/File Modal -->
       <div id="myModal" class="modal">
         <!-- Modal content -->
-        <div id="myModalContent" class="modal-content">
-        </div>
-      
+        <div id="myModalContent" class="modal-content"></div>
       </div>
     </div>
   </main>
@@ -351,6 +365,12 @@
       if (event.target == modal) {
         modal.style.display = "none";
       }
+
+      var delete_ele = document.getElementsByClassName('delete_ele');
+      for (let j = 0; j < delete_ele.length; j++) {
+          var deleteEle = delete_ele[j];
+          deleteEle.style.display = 'none'
+        }
     }
 
   </script>
@@ -403,7 +423,7 @@
       })
     } else {
       localStorage.setItem('file-loc', JSON.stringify(`${folder.path}`));
-      window.location.href = "http://localhost:5500/"
+      window.location.href = "/ide"
     }
   }
 
@@ -423,30 +443,43 @@
     const folderDiv = document.createElement('div');
     folderDiv.className = file.type === 'Folder' ? 'folder' : 'file';
     folderDiv.onclick = () => displayFolderData(file);
+    const deleteComponent = document.createElement('div');
+    
+
+    folderDiv.oncontextmenu = (event) => {
+      event.preventDefault(); // Prevent the default context menu
+      deleteComponent.style.display = 'block';
+      deleteComponent.onclick = (e) => clickDelete(e, file);
+    };
 
     // Create the icon
     const icon = document.createElement('img');
     // icon.className = 'material-icons';
-    icon.style.marginBottom = '30px'
+    // icon.style.marginBottom = '30px'
     icon.src = file.type === 'Folder' ? 'http://romogi.com/file-icon.svg' : 'http://romogi.com/document.svg';  // Choose icon based on type
 
 
     // Create the <h1> for the name
     const name = document.createElement('h1');
     name.textContent = file.name;
+    
+    folderDiv.appendChild(icon)
+    
+    folderDiv.appendChild(name)
 
-    // Append the icon and name to the main div
-    folderDiv.appendChild(icon);
-    folderDiv.appendChild(name);
+    deleteComponent.className = 'delete_ele';
+    deleteComponent.innerText = 'delete';
+    folderDiv.appendChild(deleteComponent)
 
     if (file.type === 'Folder') {
       // Create the tooltip <p> element
       const toolTip = document.createElement('p');
       toolTip.className = 'cooltip';
       toolTip.textContent = `${file.children?.length || 0} folders / ${file.children?.filter(child => child.type === 'file').length || 0} files`;
-      folderDiv.appendChild(toolTip);
+      // folderDiv.appendChild(toolTip);
     }
 
+    
 
     return folderDiv;
   }
@@ -548,6 +581,16 @@
 
     modal_content.appendChild(btn)
     modal.style.display = "block";
+  }
+
+  function clickDelete(e, file){
+    e.stopPropagation();
+    var delete_ele = document.getElementsByClassName('delete_ele');
+      for (let j = 0; j < delete_ele.length; j++) {
+          var deleteEle = delete_ele[j];
+          deleteEle.style.display = 'none';
+        }
+    console.log('delete folder/file ....\npath => ', file.path, '\nname => ', file.name)  
   }
 </script>
 
