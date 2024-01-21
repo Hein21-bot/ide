@@ -230,26 +230,48 @@
 <script src="file.js"></script>
 <script>
   function handleGetFileList() {
-    getFiles('./File-Organizer').then(data => {
+    getFiles('../File-Organizer').then(data => {
       createElement(data)
-
     })
 
   }
 
   function displayFolderData(folder) {
+    console.log('folder is ====>', folder)
     if (folder.type == 'Folder') {
-      getFiles(`./${folder.path}`).then(data => {
+      getFiles(`${folder.path}`).then(data => {
         createElement(data)
       })
-    } else {
-      localStorage.setItem('file-loc', JSON.stringify(`./${folder.path}`)); 
+    } else if(folder.type == 'File'){
+      localStorage.setItem('file-loc', JSON.stringify(`${folder.path}`));
       window.location.href = "http://localhost:5500/"
     }
   }
 
+  async function getFiles(dir) {
+    const baseUrl = "http://localhost:8080/getFolder";
+
+    const queryParams = {
+      dirName: dir,
+    };
+
+    const urlWithQuery = `${baseUrl}?${new URLSearchParams(
+      queryParams
+    ).toString()}`;
+    try {
+      const response = await fetch(urlWithQuery, {
+        method: "GET",
+      });
+      if (response.status != 200) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    } catch (error) {
+      console.error("Fetch Error:", error);
+    }
+  }
+
   async function createElement(data) {
-    console.log(document.getElementById('organizer').children.length)
     document.getElementById('organizer').replaceChildren()
     // Get the organizer div
     const organizerDiv = document.getElementById('organizer');
@@ -295,5 +317,6 @@
 
   handleGetFileList()
 </script>
+<!-- <script src="index.js"></script> -->
 
 </html>

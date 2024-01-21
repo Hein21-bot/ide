@@ -182,9 +182,24 @@ async function saveAs() {
 }
 
 async function runCode() {
-  const newTab = window.open();
-  newTab.document.body.innerHTML = `${editor.innerText}`;
+  // checkURL('http://localhost:8080/runFile');
+  // console.log('here ==========>', checkURL)
+  window.open('http://localhost:8080/runFile', '_blank').focus();
 }
+
+// function checkURL(url) {
+//   fetch(url, { method: 'HEAD' })
+//     .then(response => {
+//       if (response.ok) {
+//         console.log(`URL is running: ${url}`);
+//       } else {
+//         console.log(`URL not accessible: ${url}`);
+//       }
+//     })
+//     .catch(error => {
+//       console.error(`Error checking URL: ${error}`);
+//     });
+// }
 
 async function copy() {
   try {
@@ -287,9 +302,9 @@ getData()
 async function getData() {
   let dir = JSON.parse(localStorage.getItem('file-loc'));
 
-  getFiles(dir).then(data=> {
+  getFiles(dir).then(data => {
     let initial = data.data.split('\n')
-    .map(line => line.replace(/</g, '&lt;'));
+      .map(line => line.replace(/</g, '&lt;'));
     for (let i = 0; i < initial.length; i++) {
       document.getElementById('editor').appendChild(document.createElement('span')).innerHTML = initial[i];
     }

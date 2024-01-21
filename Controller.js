@@ -32,15 +32,34 @@ const stat = util.promisify(fs.stat);
 
 app.get("/readFile", (req, res) => {
   const { dirName } = req.query;
-  const path = "../File-Organizer/index.html";
+  fs.readFile(dirName, "utf8", (err, data) => {
+    const result = { data: data }
+    if (err) {
+      res.status(400).send(err);
+    }
+    if (data != undefined) {
+      res.status(200).send(result);
+    }
+  });
+});
+
+app.get("/runFile", (req, res) => {
+  // const { dirName } = req.query;
+  const path = "./autoreload.html";
+
   fs.readFile(path, "utf8", (err, data) => {
     const result = data
     if (err) {
       res.status(400).send(err);
     }
+    // checkURL('http://localhost:8080/readFile');
     res.status(200).send(result);
   });
-});
+})
+
+
+
+
 
 app.post("/createFile", async (req, res) => {
   const content = req.body;
@@ -67,32 +86,27 @@ app.post("/createFile", async (req, res) => {
 app.post("/updateFile", async (req, res) => {
   const content = req.body;
   const { fileName, dirName } = req.query;
+  console.log('here ======>', fileName, dirName)
   const path = "../File-Organizer/index.html";
-  const folder = "../File-Organizer";
+  // const folder = "../File-Organizer";
   try {
-    if (!(await exists(folder))) {
-      await mkdir(folder, { recursive: true });
+    if (!(await exists(dirName))) {
+      await mkdir(dirName, { recursive: true });
       console.log("Directory created successfully");
     }
     // const filePath = path.join(dirName, fileName);
     await writeFile(path, content); // Use 'filePath' instead of 'dirName'
 
-    http
-      .createServer((req, res) => {
-        const path = "../File-Organizer/index.html";
-        fs.readFile(path, (err, data) => {
-          if (err) {
-            res.writeHead(404);
-            res.end("404 Not Found");
-            return;
-          }
-          res.writeHead(200, { "Content-Type": "text/html" });
-          res.end(data);
-        });
-      })
-      .listen(3000, () => {
-        res.send("File update successful!");
-      });
+    const filePath = "../File-Organizer/index.html";
+    fs.readFile(filePath, (err, data) => {
+      if (err) {
+        res.writeHead(404);
+        res.end("404 Not Found");
+        return;
+      }
+      res.writeHead(200, { "Content-Type": "text/html" });
+      res.end(data);
+    });
   } catch (err) {
     res.status(500).send("Error: " + err.message);
   }
@@ -140,7 +154,7 @@ function convertTimestamp(timestamp) {
 }
 
 app.get("/getFolder", async (req, res) => {
-  // const dirName = "./File-Organizer";
+  // const dirName = "../File-Organizer";
   const { dirName } = req.query;
   let data = [];
 
