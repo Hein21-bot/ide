@@ -1,10 +1,10 @@
 let fileHandle;
 
-async function saveData() {
+async function saveData(fullPath, name) {
   const baseUrl = "http://localhost:8080/createFile";
   const queryParams = {
-    fileName: projectname.innerText,
-    dirName: "File-Organizer",
+    dirName: fullPath,
+    fileName: name,
   };
   const urlWithQuery = `${baseUrl}?${new URLSearchParams(
     queryParams
@@ -15,7 +15,7 @@ async function saveData() {
       headers: {
         "Content-Type": "text/html",
       },
-      body: editor.innerText,
+      body: name,
     });
     if (response.status != 200) {
       throw new Error(`HTTP error! status: ${response}`);
@@ -108,6 +108,55 @@ async function updateFileName() {
   }
 }
 
+
+async function createFolder(fullPath, name) {
+  const baseUrl = "http://localhost:8080/createFolder";
+
+  const queryParams = {
+    dirName: fullPath,
+    folderName: name
+  };
+
+  const urlWithQuery = `${baseUrl}?${new URLSearchParams(
+    queryParams
+  ).toString()}`;
+  try {
+    const response = await fetch(urlWithQuery, {
+      method: "GET",
+    });
+    if (response.status != 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+  } catch (error) {
+    console.error("Fetch Error:", error);
+  }
+}
+
+
+async function deleteFolder(fullPath) {
+  const baseUrl = "http://localhost:8080/deleteFolder";
+
+  const queryParams = {
+    dirName: fullPath
+  };
+
+  const urlWithQuery = `${baseUrl}?${new URLSearchParams(
+    queryParams
+  ).toString()}`;
+  try {
+    const response = await fetch(urlWithQuery, {
+      method: "DELETE",
+    });
+    if (response.status != 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+  } catch (error) {
+    console.error("Fetch Error:", error);
+  }
+}
+
 async function getFiles(dir) {
   const baseUrl = "http://localhost:8080/getFolder";
 
@@ -182,24 +231,31 @@ async function saveAs() {
 }
 
 async function runCode() {
-  // checkURL('http://localhost:8080/runFile');
+  let check = await checkURL('http://localhost:8080/runFile');
   // console.log('here ==========>', checkURL)
-  window.open('http://localhost:8080/runFile', '_blank').focus();
+  // window.open('http://localhost:8080/runFile', '_blank').focus();
+  var newWindow = window.open('https://example.com');
+  if (newWindow.closed) {
+    console.log('The window is closed');
+  } else {
+    console.log('The window is still open');
+  }
+
 }
 
-// function checkURL(url) {
-//   fetch(url, { method: 'HEAD' })
-//     .then(response => {
-//       if (response.ok) {
-//         console.log(`URL is running: ${url}`);
-//       } else {
-//         console.log(`URL not accessible: ${url}`);
-//       }
-//     })
-//     .catch(error => {
-//       console.error(`Error checking URL: ${error}`);
-//     });
-// }
+async function checkURL(url) {
+  await fetch(url, { method: 'HEAD' })
+    .then(response => {
+      if (response.ok) {
+        console.log(`URL is running: ${url}`);
+      } else {
+        console.log(`URL not accessible: ${url}`);
+      }
+    })
+    .catch(error => {
+      console.error(`Error checking URL: ${error}`);
+    });
+}
 
 async function copy() {
   try {

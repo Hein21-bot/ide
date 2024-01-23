@@ -46,23 +46,23 @@
   .folder,
   .file {
     float: left;
-    width: 100px;
-    height: 152px;
+    /* width: 100px; */
+    /* height: 152px; */
     padding: 20px;
     margin-right: 50px;
     margin-bottom: 70px;
     border-radius: 2px;
-    overflow: hidden;
+    /* overflow: hidden; */
     cursor: pointer;
   }
 
   .folder:hover h1 {
-    display: none;
+    /* display: none; */
   }
 
   .folder:hover p.cooltip {
     opacity: 1;
-    top: -35px;
+    top: -2px;
     /* z-index: 99; */
 
   }
@@ -81,16 +81,16 @@
 
   .folder h1,
   .file h1 {
-    position: relative;
+    /* position: relative; */
     display: block;
-    top: -37px;
+    top: -32px;
     font-size: 20px;
     font-weight: 400;
   }
 
   .folder p.cooltip {
     position: relative;
-    top: -25px;
+    top: -2px;
     /* left: -50%; */
     /* margin-left: 35px; */
     background: #212121;
@@ -188,6 +188,148 @@
   .hidden {
     display: none;
   }
+
+  /* Create Button styles */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    margin-left: -49px;
+    margin-top: 10px;
+    min-width: 160px;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+  }
+
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+
+  .dropdown a:hover {
+    background-color: #ddd;
+  }
+
+  .show {
+    display: block;
+  }
+
+  /* Breadcrumb styles */
+  ul.breadcrumb {
+    padding: 10px 16px;
+    list-style: none;
+    background-color: #eee;
+  }
+
+  ul.breadcrumb li {
+    display: inline;
+    font-size: 18px;
+  }
+
+  ul.breadcrumb li+li:before {
+    padding: 8px;
+    color: black;
+    content: "/\00a0";
+  }
+
+  ul.breadcrumb li a {
+    color: #0275d8;
+    text-decoration: none;
+  }
+
+  ul.breadcrumb li a:hover {
+    color: #01447e;
+    text-decoration: underline;
+  }
+
+  /* The Modal (background) */
+  .modal {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    padding-top: 100px;
+    /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+  }
+
+  /* Modal Content */
+  .modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 30%;
+    height: auto;
+  }
+
+  .modal-content label {
+    width: 60px !important;
+    min-width: 60px;
+    display: inline-block;
+  }
+
+  .modal-content h4 {
+    margin-bottom: 10px;
+  }
+
+  .modal-content .div {
+    display: flex;
+    padding: 10px 0px;
+  }
+
+  .modal-content input {
+    width: 100%;
+  }
+
+  .modal-content button {
+    margin: auto;
+    display: flex;
+  }
+
+  .postfix {
+    position: relative;
+    margin-left: 2px;
+    /* top: 0;
+  right: 10px; */
+  }
+
+  .div3 {
+    display: flex;
+    flex-grow: 1;
+  }
+
+  /* Delete Folder/File */
+  .delete_ele {
+    display: none;
+    position: relative;
+    top: -48px;
+    left: 88px;
+    background: darkgrey;
+    padding: 3px;
+    border-radius: 5px;
+    width: 80px;
+  }
+
+  .delete_ele:hover {
+    background: rgb(198, 197, 197);
+  }
 </style>
 
 <body>
@@ -196,29 +338,54 @@
     <i class="material-icons icon-menu">menu</i>
     <h1>Files</h1>
     <span></span>
-    <i class="material-icons">add</i>
+
+    <div class="dropdown">
+      <i onclick="toggleCreateDropdown()" class="material-icons create-btn">add</i>
+      <div id="myDropdown" class="dropdown-content">
+        <a onclick="clickCreate('folder')" href="javascript:;">Create Folder</a>
+        <a onclick="clickCreate('file')" href="javascript:;">Create File</a>
+      </div>
+    </div>
     <i class="material-icons">more_vert</i>
   </header>
 
   <main>
-    <div class="organizer" id="organizer">
+    <ul id="breadcrumb" class="breadcrumb"></ul>
+    <div class="organizer" id="organizer"></div>
 
+    <!-- Create Folder/File Modal -->
+    <div id="myModal" class="modal">
+      <!-- Modal content -->
+      <div id="myModalContent" class="modal-content"></div>
     </div>
-    <!-- <div class="files" id="files" class="hidden"> -->
-
     </div>
   </main>
 
   <script>
-    const FileSystem = {
-      "Documents": {
 
-      },
-      "Downloads": {
 
-      },
-      "Photos": {
+    window.onclick = function (event) {
+      // Close the dropdown if the user clicks outside of it
+      if (!event.target.matches('.create-btn')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+          }
+        }
+      }
 
+      // When the user clicks anywhere outside of the modal, close it
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+
+      var delete_ele = document.getElementsByClassName('delete_ele');
+      for (let j = 0; j < delete_ele.length; j++) {
+        var deleteEle = delete_ele[j];
+        deleteEle.style.display = 'none'
       }
     }
 
@@ -227,23 +394,52 @@
 
 </body>
 
-<script src="file.js"></script>
 <script>
+  let breadcrumbList = ['File Organizer']
+  async function getFiles(dir) {
+    const baseUrl = "http://localhost:8080/getFolder";
+
+    const queryParams = {
+      dirName: dir,
+    };
+
+    const urlWithQuery = `${baseUrl}?${new URLSearchParams(
+      queryParams
+    ).toString()}`;
+    try {
+      const response = await fetch(urlWithQuery, {
+        method: "GET",
+      });
+      if (response.status != 200) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    } catch (error) {
+      console.error("Fetch Error:", error);
+    }
+  }
+
   function handleGetFileList() {
-    getFiles('../File-Organizer').then(data => {
+    getFiles('../File Organizer').then(data => {
       createElement(data)
     })
 
   }
 
   function displayFolderData(folder) {
-    console.log('folder is ====>', folder)
     if (folder.type == 'Folder') {
+
+      const list = folder.path.split('/')
+      list.shift();
+      breadcrumbList = list;
+      handleLoadBreadcrumb();
+
       getFiles(`${folder.path}`).then(data => {
         createElement(data)
       })
-    } else if(folder.type == 'File'){
+    } else {
       localStorage.setItem('file-loc', JSON.stringify(`${folder.path}`));
+      // window.location.href = "/ide"
       window.location.href = "http://localhost:5500/"
     }
   }
@@ -287,11 +483,19 @@
     const folderDiv = document.createElement('div');
     folderDiv.className = file.type === 'Folder' ? 'folder' : 'file';
     folderDiv.onclick = () => displayFolderData(file);
+    const deleteComponent = document.createElement('div');
+
+
+    folderDiv.oncontextmenu = (event) => {
+      event.preventDefault(); // Prevent the default context menu
+      deleteComponent.style.display = 'block';
+      deleteComponent.onclick = (e) => clickDelete(e, file);
+    };
 
     // Create the icon
     const icon = document.createElement('img');
     // icon.className = 'material-icons';
-    icon.style.marginBottom = '30px'
+    // icon.style.marginBottom = '30px'
     icon.src = file.type === 'Folder' ? 'http://romogi.com/file-icon.svg' : 'http://romogi.com/document.svg';  // Choose icon based on type
 
 
@@ -299,24 +503,148 @@
     const name = document.createElement('h1');
     name.textContent = file.name;
 
-    // Append the icon and name to the main div
-    folderDiv.appendChild(icon);
-    folderDiv.appendChild(name);
+    folderDiv.appendChild(icon)
+
+    folderDiv.appendChild(name)
+
+    deleteComponent.className = 'delete_ele';
+    deleteComponent.innerText = 'delete';
+    folderDiv.appendChild(deleteComponent)
 
     if (file.type === 'Folder') {
       // Create the tooltip <p> element
       const toolTip = document.createElement('p');
       toolTip.className = 'cooltip';
       toolTip.textContent = `${file.children?.length || 0} folders / ${file.children?.filter(child => child.type === 'file').length || 0} files`;
-      folderDiv.appendChild(toolTip);
+      // folderDiv.appendChild(toolTip);
     }
+
 
 
     return folderDiv;
   }
 
-  handleGetFileList()
+  function handleLoadBreadcrumb() {
+    const breadcrumb_ele = document.getElementById('breadcrumb');
+    breadcrumb_ele.replaceChildren();
+
+    for (let i = 0; i < breadcrumbList.length; i++) {
+      const folder_name = breadcrumbList[i];
+
+      const ele = document.createElement('li');
+      if (i !== breadcrumbList.length - 1) {
+        const sub_ele = document.createElement('a')
+        sub_ele.href = 'javascript:;';
+        sub_ele.innerText = folder_name;
+        ele.appendChild(sub_ele)
+        ele.onclick = () => {
+          let index = breadcrumbList.indexOf(folder_name);
+
+          const temp = breadcrumbList.slice(0, index + 1);
+          breadcrumbList = temp;
+
+          handleLoadBreadcrumb();
+          const folder_path = `../${breadcrumbList.join('/')}`;
+          getFiles(`${folder_path}`).then(data => {
+            createElement(data)
+          })
+        };
+      } else {
+        ele.innerText = folder_name;
+      }
+
+      breadcrumb_ele.appendChild(ele);
+
+    }
+
+  }
+
+  handleGetFileList();
+  handleLoadBreadcrumb();
+
+  function toggleCreateDropdown() {
+    document.getElementById("myDropdown").classList.toggle("show");
+  }
+
+  // Get the modal
+  var modal = document.getElementById("myModal");
+  var modal_content = document.getElementById("myModalContent");
+  function clickCreate(val) {
+    let filePath = [...breadcrumbList];
+    filePath.shift()
+    modal_content.replaceChildren();
+
+    const header = document.createElement('h4');
+    header.innerText = `Create ${val.charAt(0).toUpperCase() + val.slice(1)}`
+    modal_content.appendChild(header);
+    const label1 = document.createElement('label')
+    label1.for = 'filepath';
+    label1.innerText = 'Path: ';
+    const input1 = document.createElement('input');
+    input1.id = 'filepath';
+    input1.name = 'filepath';
+    input1.value = './' + filePath.join('/');
+    input1.disabled = true;
+
+    const label2 = document.createElement('label')
+    label2.for = 'name';
+    label2.innerText = 'Name: ';
+    const input2 = document.createElement('input');
+    input2.id = 'name';
+    input2.name = 'name';
+
+    const div1 = document.createElement('div')
+    div1.className = 'div';
+    div1.appendChild(label1)
+    div1.appendChild(input1)
+
+    const div2 = document.createElement('div')
+    div2.className = 'div';
+    div2.appendChild(label2)
+    // 
+    if (val === 'file') {
+      div2.innerHTML += "<div class='div3'><input id='name' name='name' /><span class='postfix'>.html</span></div>"
+    } else {
+      div2.appendChild(input2)
+    }
+    modal_content.appendChild(div1)
+    modal_content.appendChild(div2)
+
+
+    const btn = document.createElement('button')
+    btn.innerText = 'Create';
+    btn.onclick = function () {
+      const fullPath = '../' + breadcrumbList.join('/');
+      const name = document.getElementById('name').value + (val === 'file' ? '.html' : '')
+      console.log('hello create folder/file.....\nfilepath = ', fullPath, '\nname = ', name)
+      console.log('val is ----->', val)
+      if (val === 'file') {
+        saveData(fullPath, name)
+      } else {
+        createFolder(fullPath, name)
+      }
+
+    }
+
+    modal_content.appendChild(btn)
+    modal.style.display = "block";
+  }
+
+  function clickDelete(e, file) {
+    e.stopPropagation();
+    var delete_ele = document.getElementsByClassName('delete_ele');
+    for (let j = 0; j < delete_ele.length; j++) {
+      var deleteEle = delete_ele[j];
+      deleteEle.style.display = 'none';
+    }
+    console.log('delete folder/file ....\npath => ', file.path, '\nname => ', file.name)
+    deleteFolder(file.path)
+  }
+
 </script>
 <!-- <script src="index.js"></script> -->
+
+<!-- <script src="file.js"></script> -->
+<script src="file.js"></script>
 
 </html>

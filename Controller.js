@@ -3,7 +3,7 @@ const app = express();
 const fs = require("fs");
 const util = require("util");
 const path = require("path");
-const http = require("http");
+const fsE = require('fs-extra')
 
 const port = 8080;
 app.use(express.json()); // for parsing application/json
@@ -57,19 +57,15 @@ app.get("/runFile", (req, res) => {
   });
 })
 
-
-
-
-
 app.post("/createFile", async (req, res) => {
   const content = req.body;
   const { fileName, dirName } = req.query;
 
   try {
-    if (!(await exists(dirName))) {
-      await mkdir(dirName, { recursive: true });
-      console.log("Directory created successfully");
-    }
+    // if (!(await exists(dirName))) {
+    //   await mkdir(dirName, { recursive: true });
+    //   console.log("Directory created successfully");
+    // }
     const filePath = path.join(dirName, fileName);
 
     if (fs.existsSync(filePath)) {
@@ -86,7 +82,6 @@ app.post("/createFile", async (req, res) => {
 app.post("/updateFile", async (req, res) => {
   const content = req.body;
   const { fileName, dirName } = req.query;
-  console.log('here ======>', fileName, dirName)
   const path = "../File-Organizer/index.html";
   // const folder = "../File-Organizer";
   try {
@@ -124,6 +119,24 @@ app.delete("/deleteFile", (req, res) => {
   });
 });
 
+app.delete("/deleteFolder", async (req, res) => {
+  const { dirName } = req.query
+  // const folderPath = "../File-Organizer/New Folder"
+  await deleteFolderRecursive(dirName)
+    .then(() => res.status(200).send("Folder and all contents deleted!"))
+    .catch(error => console.error('Error occurred:', error));
+
+})
+
+async function deleteFolderRecursive(directoryPath) {
+  try {
+    await fsE.remove(directoryPath);
+    console.log('Folder and all contents deleted.');
+  } catch (errro) {
+    console.error('Error occurred:', error);
+  }
+}
+
 app.get("/updateFileName", (req, res) => {
   const { fileName, dirName, oldFileName } = req.query;
 
@@ -139,10 +152,10 @@ app.get("/updateFileName", (req, res) => {
 });
 
 app.get("/createFolder", async (req, res) => {
-  const { dirName } = req.query;
-
-  if (!(await exists(dirName))) {
-    await mkdir(dirName, { recursive: true });
+  const { dirName, folderName } = req.query;
+  const folderPath = path.join(dirName, folderName);
+  if (!(await exists(folderPath))) {
+    await mkdir(folderPath, { recursive: true });
     res.status(200).send("Folder Created Successful!");
   } else {
     res.status(400).send("Folder name already exist!");
@@ -197,7 +210,7 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "fileOrganizer.html"));
 });
 
-app.get("/file-organizer", (req, res) => {
+app.get("/ide", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
