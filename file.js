@@ -331,6 +331,7 @@ getData()
 
 async function getData() {
   let dir = JSON.parse(localStorage.getItem('file-loc'));
+  console.log('dir ', dir)
 
   getFiles(dir).then(data => {
     let initial = data.data.split('\n')
@@ -404,7 +405,7 @@ async function runCode() {
 }
 
 function checkIfWindowClosed() {
-  if (newTab.closed) {
+  if (newTab?.closed) {
     console.log('check interval')
     sessionStorage.setItem('resultPageOpen', 'false');
     clearInterval(checkInterval);

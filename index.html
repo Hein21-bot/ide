@@ -323,12 +323,127 @@
     #editor ::selection {
       background-color: rgba(134, 85, 59, 255);
     }
+
+    /* Modal Content */
+  .modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 30%;
+    height: auto;
+  }
+
+  .modal-content label {
+    width: 60px !important;
+    min-width: 60px;
+    display: inline-block;
+  }
+
+  .modal-content h4 {
+    margin: 0px 10px;
+  }
+
+  .modal-content .div {
+    display: flex;
+    /* padding: 10px 0px; */
+    align-items: center;
+  }
+
+  .modal-content input {
+    width: 100%;
+    display: block;
+    height: 20px;
+  }
+
+  .modal-content button {
+    margin: auto;
+    display: flex;
+  }
+
+  .postfix {
+    position: relative;
+    margin-left: 2px;
+    width: 50px;
+    /* top: 0;
+  right: 10px; */
+  }
+
+  .div3 {
+    display: flex;
+    flex-grow: 1;
+  }
+
+  /* Breadcrumb styles */
+  ul.breadcrumb {
+    padding: 10px 16px;
+    list-style: none;
+    background-color: #eee;
+  }
+
+  ul.breadcrumb li {
+    display: inline;
+    font-size: 14px;
+    float: none;
+  }
+
+  ul.breadcrumb li+li:before {
+    padding: 8px;
+    color: black;
+    content: "/\00a0";
+  }
+
+  ul.breadcrumb li a {
+    color: #0275d8;
+    text-decoration: none;
+  }
+
+  ul.breadcrumb li a:hover {
+    color: #01447e;
+    text-decoration: underline;
+  }
+
+  .organizer-icon{
+    width: 50px;
+  }
+  .organizer {
+    display: flex;
+
+  }
   </style>
 </head>
 
 <body>
+  <script>
+    window.onclick = function (event) {
+      if (!event.target.matches('.check')) {
+        var dropdowns = document.getElementsByClassName("submenu");
+      //   max-height: 50vw;
+      // transition: max-height 0.25s ease-in;
+      // console.log(dropdowns[0])
+        // dropdowns[0].style.maxHeight = 0;
+        // dropdowns[0].style.transition = '0 0.25s ease-in';
+        // for (i = 0; i < dropdowns.length; i++) {
+        //   var openDropdown = dropdowns[i];
+        //   if (openDropdown.classList.contains('show')) {
+        //     openDropdown.classList.remove('show');
+        //   }
+        // }
+      }
+
+      // When the user clicks anywhere outside of the modal, close it
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+  </script>
   <!-- use custom scrollbar on left only https://codepen.io/GhostRider/pen/oNvoNv -->
- 
+  <div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div id="myModalContent" class="modal-content">
+      
+    </div>
+  </div>
   <div id="texteditor">
     <pre  id="editor" contenteditable="true"
       spellcheck="false"></pre>
@@ -347,8 +462,8 @@
     <ul id="menu">
 
       <li>
-        <input id="check01" type="checkbox" name="menu">
-        <label for="check01">
+        <input class="check" id="check01" type="checkbox" name="menu">
+        <label class="check" for="check01">
           <svg id="projecticon"
             style="width: 1em; height: 1em; vertical-align: middle;fill: currentColor;overflow: hidden;" version="1.1"
             xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -413,7 +528,7 @@
             </svg>
             Save
           </li>
-          <li id="saveasoption" onclick="saveAs()">
+          <li id="saveasoption" onclick="handleSaveAs()">
             <svg class="svg-icon" id="saveasicon"
               style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
               viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
@@ -423,7 +538,7 @@
             </svg>
             Save As..
           </li>
-          <li id="printoption">
+          <!-- <li id="printoption">
             <svg class="svg-icon" id="printicon"
               style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
               viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
@@ -432,12 +547,12 @@
                 fill=""></path>
             </svg>
             Print
-          </li>
+          </li> -->
         </ul>
       </li>
       <li>
-        <input id="check02" type="checkbox" name="menu">
-        <label for="check02">
+        <input class="check" id="check02" type="checkbox" name="menu">
+        <label class="check" for="check02">
           <svg class="svg-icon" id="editfiles"
             style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
             viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
@@ -511,8 +626,8 @@
         </ul>
       </li>
       <li>
-        <input id="check03" type="checkbox" name="menu">
-        <label for="check03">
+        <input class="check" id="check03" type="checkbox" name="menu">
+        <label class="check" for="check03">
           <svg class="svg-icon" id="modeicon"
             style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
             viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
@@ -524,7 +639,7 @@
           Mode
         </label>
         <ul class="submenu">
-          <li id="mathoption">
+          <!-- <li id="mathoption">
             <svg class="svg-icon" id="mathicon"
               style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
               viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
@@ -544,7 +659,7 @@
               </path>
             </svg>
             Math
-          </li>
+          </li> -->
           <li id="codeoption">
             <svg class="svg-icon" id="codeicon"
               style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
@@ -581,10 +696,238 @@
 
     </ul>
   </div>
+  <!-- Create Folder/File Modal -->
+  
   <script src="index.js"></script>
   <script src="file.js"></script>
   <script>
+    var modal = document.getElementById("myModal");
+    var modal_content = document.getElementById("myModalContent");
+
+    let breadcrumbList = ['File Organizer']
+
     setInterval(checkIfWindowClosed, 1000);
+
+    function handleSaveAs(){
+      let filePath = [...breadcrumbList];
+    filePath.shift()
+    modal_content.replaceChildren();
+
+      const header = document.createElement('h4');
+    header.innerText = `Select a folder`
+    modal_content.appendChild(header);
+    const breadcrumb = document.createElement('ul')
+    breadcrumb.id = 'breadcrumb';
+    breadcrumb.className = 'breadcrumb';
+    modal_content.appendChild(breadcrumb);
+
+    const organizer = document.createElement('div');
+    organizer.id = 'organizer';
+    organizer.className = 'organizer';
+    organizer.style.minHeight = '200px';
+    organizer.style.border = '1px solid #e5e5e5'
+    modal_content.appendChild(organizer);
+
+    const label1 = document.createElement('label')
+    label1.for = 'filepath';
+    label1.innerText = 'Path: ';
+    const input1 = document.createElement('input');
+    input1.id = 'filepath';
+    input1.name = 'filepath';
+    input1.value = './' + filePath.join('/');
+    input1.disabled = true;
+
+    const label2 = document.createElement('label')
+    label2.for = 'name';
+    label2.innerText = 'Name: ';
+    const input2 = document.createElement('input');
+    input2.id = 'name';
+    input2.name = 'name';
+
+    const div1 = document.createElement('div')
+    div1.className = 'div';
+    div1.appendChild(label1)
+    div1.appendChild(input1)
+
+    const div2 = document.createElement('div')
+    div2.className = 'div';
+    div2.appendChild(label2)
+    // 
+   
+    div2.innerHTML += "<div class='div3'><input id='name' name='name' /><span class='postfix'>.html</span></div>"
+    
+    modal_content.appendChild(div1)
+    modal_content.appendChild(div2)
+
+
+    /* display: block;
+      z-index: 99;
+      position: relative; */
+    modal.style.display = "flex";
+    modal.style.zIndex = 99;
+    modal.style.position = 'relative';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+
+    handleGetFileList();
+    handleLoadBreadcrumb();
+
+    const btn = document.createElement('button')
+    btn.innerText = 'Save';
+    btn.onclick = function () {
+      const fileName = document.getElementById('name').value;
+      if(fileName.trim() === ''){
+        window.alert("File Name can't be empty!")
+      }else{
+        const fullPath = '../' + breadcrumbList.join('/');
+        const name = fileName + ('.html')
+        console.log('Save As ===> \nfilepath = ', fullPath, '\nname = ', name)
+      }
+      
+    }
+    modal_content.appendChild(btn)
+    }
+
+    function displayFolderData(folder) {
+    if (folder.type == 'Folder') {
+
+      const list = folder.path.split('/')
+      list.shift();
+      breadcrumbList = list;
+      handleLoadBreadcrumb();
+
+      getFiles(`${folder.path}`).then(data => {
+        createElement(data)
+      })
+    } else {
+      localStorage.setItem('file-loc', JSON.stringify(`${folder.path}`));
+      // window.location.href = "/ide"
+      window.location.href = "http://localhost:5500/"
+    }
+  }
+
+  function handleLoadBreadcrumb() {
+    const breadcrumb_ele = document.getElementById('breadcrumb');
+    breadcrumb_ele.replaceChildren();
+
+    for (let i = 0; i < breadcrumbList.length; i++) {
+      const folder_name = breadcrumbList[i];
+
+      const ele = document.createElement('li');
+      if (i !== breadcrumbList.length - 1) {
+        const sub_ele = document.createElement('a')
+        sub_ele.href = 'javascript:;';
+        sub_ele.innerText = folder_name;
+        ele.appendChild(sub_ele)
+        ele.onclick = () => {
+          let index = breadcrumbList.indexOf(folder_name);
+
+          const temp = breadcrumbList.slice(0, index + 1);
+          breadcrumbList = temp;
+
+          handleLoadBreadcrumb();
+          const folder_path = `../${breadcrumbList.join('/')}`;
+          getFiles(`${folder_path}`).then(data => {
+            createElement(data)
+          })
+        };
+      } else {
+        ele.innerText = folder_name;
+      }
+
+      breadcrumb_ele.appendChild(ele);
+
+    }
+
+    let filePath = [...breadcrumbList];
+    filePath.shift();
+    const filepathInput = document.getElementById('filepath')
+    filepathInput.value = './' + filePath.join('/');
+  }
+
+  function handleGetFileList() {
+    getFiles('../File Organizer').then(data => {
+      createElement(data)
+    })
+
+  }
+
+  async function getFiles(dir) {
+    const baseUrl = "http://localhost:8080/getFolder";
+
+    const queryParams = {
+      dirName: dir,
+    };
+
+    const urlWithQuery = `${baseUrl}?${new URLSearchParams(
+      queryParams
+    ).toString()}`;
+    try {
+      const response = await fetch(urlWithQuery, {
+        method: "GET",
+      });
+      if (response.status != 200) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    } catch (error) {
+      console.error("Fetch Error:", error);
+    }
+  }
+
+  async function createElement(data) {
+    document.getElementById('organizer').replaceChildren()
+    // Get the organizer div
+    const organizerDiv = document.getElementById('organizer');
+
+    // Map the files to elements and append them to the organizer
+    data.forEach(file => {
+      if(file.type === 'Folder'){
+        organizerDiv.appendChild(createFileElement(file));
+      }
+      
+    });
+  }
+
+  function createFileElement(file) {
+// Create the main .folder div
+const folderDiv = document.createElement('div');
+    folderDiv.className = file.type === 'Folder' ? 'folder' : 'file';
+    folderDiv.style.margin = '0px 10px'
+    folderDiv.onclick = () => displayFolderData(file);
+
+    // Create the icon
+    const icon = document.createElement('img');
+    icon.className = 'organizer-icon'
+    // icon.className = 'material-icons';
+    // icon.style.marginBottom = '30px'
+    icon.src = file.type === 'Folder' ? 'http://romogi.com/file-icon.svg' : 'http://romogi.com/document.svg';  // Choose icon based on type
+
+
+    // Create the <h1> for the name
+    const name = document.createElement('div');
+    name.style.fontSize = '12px';
+    name.style.textAlign = 'center'
+    name.textContent = file.name;
+
+    folderDiv.appendChild(icon)
+
+    folderDiv.appendChild(name)
+
+    if (file.type === 'Folder') {
+      // Create the tooltip <p> element
+      const toolTip = document.createElement('p');
+      toolTip.className = 'cooltip';
+      toolTip.textContent = `${file.children?.length || 0} folders / ${file.children?.filter(child => child.type === 'file').length || 0} files`;
+      // folderDiv.appendChild(toolTip);
+    }
+
+
+
+    return folderDiv;
+    
+  }
+  
   </script>
 </body>
 

@@ -32,6 +32,7 @@ const stat = util.promisify(fs.stat);
 
 app.get("/readFile", (req, res) => {
   const { dirName } = req.query;
+  // const dirName = '../File Organizer/test.html'
   fs.readFile(dirName, "utf8", (err, data) => {
     const result = { data: data }
     if (err) {
@@ -46,7 +47,7 @@ app.get("/readFile", (req, res) => {
 app.get("/runFile", (req, res) => {
   // const { dirName } = req.query;
   const path = "./autoreload.html";
-
+  // console.log('dirName>>', dirName)
   fs.readFile(path, "utf8", (err, data) => {
     const result = data
     if (err) {
