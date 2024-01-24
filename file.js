@@ -230,32 +230,6 @@ async function saveAs() {
   saveUpdate();
 }
 
-async function runCode() {
-  let check = await checkURL('http://localhost:8080/runFile');
-  // console.log('here ==========>', checkURL)
-  // window.open('http://localhost:8080/runFile', '_blank').focus();
-  var newWindow = window.open('https://example.com');
-  if (newWindow.closed) {
-    console.log('The window is closed');
-  } else {
-    console.log('The window is still open');
-  }
-
-}
-
-async function checkURL(url) {
-  await fetch(url, { method: 'HEAD' })
-    .then(response => {
-      if (response.ok) {
-        console.log(`URL is running: ${url}`);
-      } else {
-        console.log(`URL not accessible: ${url}`);
-      }
-    })
-    .catch(error => {
-      console.error(`Error checking URL: ${error}`);
-    });
-}
 
 async function copy() {
   try {
@@ -391,3 +365,51 @@ async function getFiles(dir) {
     console.error("Fetch Error:", error);
   }
 }
+
+
+function isResultPageOpen() {
+  return sessionStorage.getItem('resultPageOpen') === 'true'
+}
+
+function markResultPageOpen() {
+  sessionStorage.setItem('resultPageOpen', 'true')
+}
+
+function markResultPageClose() {
+  sessionStorage.setItem('resultPageOpen', 'false')
+}
+
+document.getElementsById('runoption').addEventListener('click', function () {
+  if (isResultPageOpen()) {
+    console.log('here ===============> run code')
+  } else {
+    window.open('/run')
+    markResultPageOpen()
+  }
+})
+
+window.addEventListener('beforeunload', function () {
+  markResultPageClose()
+})
+
+
+var newTab
+async function runCode() {
+  if (isResultPageOpen()) {
+    await newTab.focus();
+  } else {
+    newTab = window.open('http://localhost:8080/runFile', '_blank');
+    markResultPageOpen()
+  }
+}
+
+function checkIfWindowClosed() {
+  if (newTab.closed) {
+    console.log('check interval')
+    sessionStorage.setItem('resultPageOpen', 'false');
+    clearInterval(checkInterval);
+  }
+}
+let checkInterval = setInterval(checkIfWindowClosed, 1000);
+
+

@@ -60,7 +60,6 @@ app.get("/runFile", (req, res) => {
 app.post("/createFile", async (req, res) => {
   const content = req.body;
   const { fileName, dirName } = req.query;
-
   try {
     // if (!(await exists(dirName))) {
     //   await mkdir(dirName, { recursive: true });
@@ -241,6 +240,17 @@ app.get("/run-sandbox", (req, res) => {
 //   console.log('Server running at http://localhost:5000/');
 // });
 
-app.listen(port, () => {
+async function autoCreateFolder() {
+  const folderPath = '../File Organizer'
+  if (!(await exists(folderPath))) {
+    await mkdir(folderPath, { recursive: true });
+    console.log('Folder Created!')
+  } else {
+    console.log('Folder already exist!')
+  }
+}
+
+app.listen(port, async () => {
+  await autoCreateFolder()
   console.log(`Server running at http://localhost:${port}`);
 });

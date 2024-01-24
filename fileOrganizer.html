@@ -617,11 +617,12 @@
       const fullPath = '../' + breadcrumbList.join('/');
       const name = document.getElementById('name').value + (val === 'file' ? '.html' : '')
       console.log('hello create folder/file.....\nfilepath = ', fullPath, '\nname = ', name)
-      console.log('val is ----->', val)
       if (val === 'file') {
         saveData(fullPath, name)
+        // window.location.reload()
       } else {
         createFolder(fullPath, name)
+        window.location.reload()
       }
 
     }
