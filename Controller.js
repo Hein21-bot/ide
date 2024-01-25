@@ -201,15 +201,16 @@ app.get("/ide", (req, res) => {
 });
 
 app.get("/run-sandbox", (req, res) => {
-  exec("erl -noshell -s test start", (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Execution error: ${error}`);
-      return res.send("Error");
-    }
-    console.log(`stdout: ${stdout}`);
-    console.error(`stderr: ${stderr}`);
-    res.send("Sandbox Executed");
-  });
+  res.sendFile(path.join(__dirname, "sandbox.html"));
+  // exec("erl -noshell -s test start", (error, stdout, stderr) => {
+  //   if (error) {
+  //     console.error(`Execution error: ${error}`);
+  //     return res.send("Error");
+  //   }
+  //   console.log(`stdout: ${stdout}`);
+  //   console.error(`stderr: ${stderr}`);
+  //   res.send("Sandbox Executed");
+  // });
 });
 
 async function autoCreateFolder() {

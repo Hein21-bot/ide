@@ -429,19 +429,24 @@ window.addEventListener('beforeunload', function () {
 
 
 var newTab
+// async function runCode() {
+//   if (isResultPageOpen()) {
+//     try {
+//       newTab.focus();
+//       window.location.reload()
+//     } catch (e) {
+//       console.error("Unable to switch to the new tab:", e);
+//     }
+//   } else {
+//     let dir = JSON.parse(localStorage.getItem("file-loc"));
+//     newTab = window.open(`http://localhost:8080/runFile?dirName=${dir}`, '_blank');
+//     markResultPageOpen()
+//   }
+// }
+
 async function runCode() {
-  if (isResultPageOpen()) {
-    try {
-      newTab.focus();
-      window.location.reload()
-    } catch (e) {
-      console.error("Unable to switch to the new tab:", e);
-    }
-  } else {
-    let dir = JSON.parse(localStorage.getItem("file-loc"));
-    newTab = window.open(`http://localhost:8080/runFile?dirName=${dir}`, '_blank');
-    markResultPageOpen()
-  }
+  let dir = JSON.parse(localStorage.getItem("file-loc"));
+    window.location.href = `/run-sandbox?dirName=${dir}`
 }
 
 function checkIfWindowClosed() {
@@ -454,3 +459,23 @@ function checkIfWindowClosed() {
 let checkInterval = setInterval(checkIfWindowClosed, 1000);
 
 
+function toggleFullscreen() {
+  const element = document.documentElement;
+
+  if (document.fullscreenElement) {
+      // If already in fullscreen, exit fullscreen
+      if (document.exitFullscreen) {
+          document.exitFullscreen();
+      }
+  } else {
+      // If not in fullscreen, enter fullscreen
+      if (element.requestFullscreen) {
+          element.requestFullscreen();
+      }
+  }
+}
+
+function wysiwyg(){
+  console.log('bla')
+  window.open("https://www.w3schools.com");
+}
