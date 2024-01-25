@@ -45,15 +45,13 @@ app.get("/readFile", (req, res) => {
 });
 
 app.get("/runFile", (req, res) => {
-  // const { dirName } = req.query;
-  const path = "./autoreload.html";
-  // console.log('dirName>>', dirName)
-  fs.readFile(path, "utf8", (err, data) => {
+  const { dirName } = req.query;
+  const path = './autoreload.html'
+  fs.readFile(dirName, "utf8", (err, data) => {
     const result = data
     if (err) {
       res.status(400).send(err);
     }
-    // checkURL('http://localhost:8080/readFile');
     res.status(200).send(result);
   });
 })
@@ -62,10 +60,6 @@ app.post("/createFile", async (req, res) => {
   const content = req.body;
   const { fileName, dirName } = req.query;
   try {
-    // if (!(await exists(dirName))) {
-    //   await mkdir(dirName, { recursive: true });
-    //   console.log("Directory created successfully");
-    // }
     const filePath = path.join(dirName, fileName);
 
     if (fs.existsSync(filePath)) {
@@ -82,18 +76,10 @@ app.post("/createFile", async (req, res) => {
 app.post("/updateFile", async (req, res) => {
   const content = req.body;
   const { fileName, dirName } = req.query;
-  const path = "../File-Organizer/index.html";
-  // const folder = "../File-Organizer";
   try {
-    if (!(await exists(dirName))) {
-      await mkdir(dirName, { recursive: true });
-      console.log("Directory created successfully");
-    }
-    // const filePath = path.join(dirName, fileName);
-    await writeFile(path, content); // Use 'filePath' instead of 'dirName'
+    await writeFile(dirName, content);
 
-    const filePath = "../File-Organizer/index.html";
-    fs.readFile(filePath, (err, data) => {
+    fs.readFile(dirName, (err, data) => {
       if (err) {
         res.writeHead(404);
         res.end("404 Not Found");
@@ -225,21 +211,6 @@ app.get("/run-sandbox", (req, res) => {
     res.send("Sandbox Executed");
   });
 });
-
-// http.createServer((req, res) => {
-//   const path = '../File-Organizer/index.html'
-//   fs.readFile(path, (err, data) => {
-//       if (err) {
-//           res.writeHead(404);
-//           res.end("404 Not Found");
-//           return;
-//       }
-//       res.writeHead(200, {'Content-Type': 'text/html'});
-//       res.end(data);
-//   });
-// }).listen(5000, () => {
-//   console.log('Server running at http://localhost:5000/');
-// });
 
 async function autoCreateFolder() {
   const folderPath = '../File Organizer'

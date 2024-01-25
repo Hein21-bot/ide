@@ -325,91 +325,92 @@
     }
 
     /* Modal Content */
-  .modal-content {
-    background-color: #fefefe;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 30%;
-    height: auto;
-  }
+    .modal-content {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 30%;
+      height: auto;
+    }
 
-  .modal-content label {
-    width: 60px !important;
-    min-width: 60px;
-    display: inline-block;
-  }
+    .modal-content label {
+      width: 60px !important;
+      min-width: 60px;
+      display: inline-block;
+    }
 
-  .modal-content h4 {
-    margin: 0px 10px;
-  }
+    .modal-content h4 {
+      margin: 0px 10px;
+    }
 
-  .modal-content .div {
-    display: flex;
-    /* padding: 10px 0px; */
-    align-items: center;
-  }
+    .modal-content .div {
+      display: flex;
+      /* padding: 10px 0px; */
+      align-items: center;
+    }
 
-  .modal-content input {
-    width: 100%;
-    display: block;
-    height: 20px;
-  }
+    .modal-content input {
+      width: 100%;
+      display: block;
+      height: 20px;
+    }
 
-  .modal-content button {
-    margin: auto;
-    display: flex;
-  }
+    .modal-content button {
+      margin: auto;
+      display: flex;
+    }
 
-  .postfix {
-    position: relative;
-    margin-left: 2px;
-    width: 50px;
-    /* top: 0;
+    .postfix {
+      position: relative;
+      margin-left: 2px;
+      width: 50px;
+      /* top: 0;
   right: 10px; */
-  }
+    }
 
-  .div3 {
-    display: flex;
-    flex-grow: 1;
-  }
+    .div3 {
+      display: flex;
+      flex-grow: 1;
+    }
 
-  /* Breadcrumb styles */
-  ul.breadcrumb {
-    padding: 10px 16px;
-    list-style: none;
-    background-color: #eee;
-  }
+    /* Breadcrumb styles */
+    ul.breadcrumb {
+      padding: 10px 16px;
+      list-style: none;
+      background-color: #eee;
+    }
 
-  ul.breadcrumb li {
-    display: inline;
-    font-size: 14px;
-    float: none;
-  }
+    ul.breadcrumb li {
+      display: inline;
+      font-size: 14px;
+      float: none;
+    }
 
-  ul.breadcrumb li+li:before {
-    padding: 8px;
-    color: black;
-    content: "/\00a0";
-  }
+    ul.breadcrumb li+li:before {
+      padding: 8px;
+      color: black;
+      content: "/\00a0";
+    }
 
-  ul.breadcrumb li a {
-    color: #0275d8;
-    text-decoration: none;
-  }
+    ul.breadcrumb li a {
+      color: #0275d8;
+      text-decoration: none;
+    }
 
-  ul.breadcrumb li a:hover {
-    color: #01447e;
-    text-decoration: underline;
-  }
+    ul.breadcrumb li a:hover {
+      color: #01447e;
+      text-decoration: underline;
+    }
 
-  .organizer-icon{
-    width: 50px;
-  }
-  .organizer {
-    display: flex;
+    .organizer-icon {
+      width: 50px;
+    }
 
-  }
+    .organizer {
+      display: flex;
+
+    }
   </style>
 </head>
 
@@ -418,9 +419,9 @@
     window.onclick = function (event) {
       if (!event.target.matches('.check')) {
         var dropdowns = document.getElementsByClassName("submenu");
-      //   max-height: 50vw;
-      // transition: max-height 0.25s ease-in;
-      // console.log(dropdowns[0])
+        //   max-height: 50vw;
+        // transition: max-height 0.25s ease-in;
+        // console.log(dropdowns[0])
         // dropdowns[0].style.maxHeight = 0;
         // dropdowns[0].style.transition = '0 0.25s ease-in';
         // for (i = 0; i < dropdowns.length; i++) {
@@ -441,12 +442,11 @@
   <div id="myModal" class="modal">
     <!-- Modal content -->
     <div id="myModalContent" class="modal-content">
-      
+
     </div>
   </div>
   <div id="texteditor">
-    <pre  id="editor" contenteditable="true"
-      spellcheck="false"></pre>
+    <pre id="editor" contenteditable="true" spellcheck="false"></pre>
   </div>
   <div id="titlebar">
 
@@ -517,8 +517,7 @@
             </svg>
             Run
           </li>
-          <li id="saveoption" type="submit" onclick="updateData()">
-
+          <li id="saveoption" type="submit" onclick="handleSave()">
             <svg class="svg-icon" id="saveicon"
               style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;"
               viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
@@ -697,7 +696,7 @@
     </ul>
   </div>
   <!-- Create Folder/File Modal -->
-  
+
   <script src="index.js"></script>
   <script src="file.js"></script>
   <script>
@@ -705,229 +704,242 @@
     var modal_content = document.getElementById("myModalContent");
 
     let breadcrumbList = ['File Organizer']
+    let folderPath;
 
-    setInterval(checkIfWindowClosed, 1000);
 
-    function handleSaveAs(){
+    function handleSave() {
+      let dir = JSON.parse(localStorage.getItem("file-loc"));
+      if (dir != null) {
+        updateData(dir)
+      } else {
+        handleSaveAs()
+      }
+    }
+
+    function handleSaveAs() {
       let filePath = [...breadcrumbList];
-    filePath.shift()
-    modal_content.replaceChildren();
+      filePath.shift()
+      modal_content.replaceChildren();
 
       const header = document.createElement('h4');
-    header.innerText = `Select a folder`
-    modal_content.appendChild(header);
-    const breadcrumb = document.createElement('ul')
-    breadcrumb.id = 'breadcrumb';
-    breadcrumb.className = 'breadcrumb';
-    modal_content.appendChild(breadcrumb);
+      header.innerText = `Select a folder`
+      modal_content.appendChild(header);
+      const breadcrumb = document.createElement('ul')
+      breadcrumb.id = 'breadcrumb';
+      breadcrumb.className = 'breadcrumb';
+      modal_content.appendChild(breadcrumb);
 
-    const organizer = document.createElement('div');
-    organizer.id = 'organizer';
-    organizer.className = 'organizer';
-    organizer.style.minHeight = '200px';
-    organizer.style.border = '1px solid #e5e5e5'
-    modal_content.appendChild(organizer);
+      const organizer = document.createElement('div');
+      organizer.id = 'organizer';
+      organizer.className = 'organizer';
+      organizer.style.minHeight = '200px';
+      organizer.style.border = '1px solid #e5e5e5'
+      modal_content.appendChild(organizer);
 
-    const label1 = document.createElement('label')
-    label1.for = 'filepath';
-    label1.innerText = 'Path: ';
-    const input1 = document.createElement('input');
-    input1.id = 'filepath';
-    input1.name = 'filepath';
-    input1.value = './' + filePath.join('/');
-    input1.disabled = true;
+      const label1 = document.createElement('label')
+      label1.for = 'filepath';
+      label1.innerText = 'Path: ';
+      const input1 = document.createElement('input');
+      input1.id = 'filepath';
+      input1.name = 'filepath';
+      input1.value = './' + filePath.join('/');
+      input1.disabled = true;
 
-    const label2 = document.createElement('label')
-    label2.for = 'name';
-    label2.innerText = 'Name: ';
-    const input2 = document.createElement('input');
-    input2.id = 'name';
-    input2.name = 'name';
+      const label2 = document.createElement('label')
+      label2.for = 'name';
+      label2.innerText = 'Name: ';
+      const input2 = document.createElement('input');
+      input2.id = 'name';
+      input2.name = 'name';
 
-    const div1 = document.createElement('div')
-    div1.className = 'div';
-    div1.appendChild(label1)
-    div1.appendChild(input1)
+      const div1 = document.createElement('div')
+      div1.className = 'div';
+      div1.appendChild(label1)
+      div1.appendChild(input1)
 
-    const div2 = document.createElement('div')
-    div2.className = 'div';
-    div2.appendChild(label2)
-    // 
-   
-    div2.innerHTML += "<div class='div3'><input id='name' name='name' /><span class='postfix'>.html</span></div>"
-    
-    modal_content.appendChild(div1)
-    modal_content.appendChild(div2)
+      const div2 = document.createElement('div')
+      div2.className = 'div';
+      div2.appendChild(label2)
+      // 
+
+      div2.innerHTML += "<div class='div3'><input id='name' name='name' /><span class='postfix'>.html</span></div>"
+
+      modal_content.appendChild(div1)
+      modal_content.appendChild(div2)
 
 
-    /* display: block;
-      z-index: 99;
-      position: relative; */
-    modal.style.display = "flex";
-    modal.style.zIndex = 99;
-    modal.style.position = 'relative';
-    modal.style.width = '100%';
-    modal.style.height = '100%';
+      /* display: block;
+        z-index: 99;
+        position: relative; */
+      modal.style.display = "flex";
+      modal.style.zIndex = 99;
+      modal.style.position = 'relative';
+      modal.style.width = '100%';
+      modal.style.height = '100%';
 
-    handleGetFileList();
-    handleLoadBreadcrumb();
+      handleGetFileList();
+      handleLoadBreadcrumb();
 
-    const btn = document.createElement('button')
-    btn.innerText = 'Save';
-    btn.onclick = function () {
-      const fileName = document.getElementById('name').value;
-      if(fileName.trim() === ''){
-        window.alert("File Name can't be empty!")
-      }else{
-        const fullPath = '../' + breadcrumbList.join('/');
-        const name = fileName + ('.html')
-        console.log('Save As ===> \nfilepath = ', fullPath, '\nname = ', name)
+      const btn = document.createElement('button')
+      btn.innerText = 'Save';
+      btn.onclick = function () {
+        const fileName = document.getElementById('name').value;
+        if (fileName.trim() === '') {
+          window.alert("File Name can't be empty!")
+        } else {
+          const fullPath = '../' + breadcrumbList.join('/');
+          const name = fileName + ('.html')
+          saveData(folderPath == undefined ? fullPath : folderPath, name)
+          localStorage.setItem('file-loc', JSON.stringify(`${folderPath == undefined ? fullPath : folderPath}/${name}`));
+          window.location.reload()
+        }
+
       }
-      
-    }
-    modal_content.appendChild(btn)
+      modal_content.appendChild(btn)
     }
 
     function displayFolderData(folder) {
-    if (folder.type == 'Folder') {
+      if (folder.type == 'Folder') {
 
-      const list = folder.path.split('/')
-      list.shift();
-      breadcrumbList = list;
-      handleLoadBreadcrumb();
+        const list = folder.path.split('/')
+        list.shift();
+        breadcrumbList = list;
+        folderPath = folder.path
+        handleLoadBreadcrumb();
 
-      getFiles(`${folder.path}`).then(data => {
+        getFiles(`${folder.path}`).then(data => {
+          createElement(data)
+        })
+      } else {
+        localStorage.setItem('file-loc', JSON.stringify(`${folder.path}`));
+        // window.location.href = "/ide"
+        window.location.href = "http://localhost:5500/"
+      }
+    }
+
+    function handleLoadBreadcrumb() {
+      const breadcrumb_ele = document.getElementById('breadcrumb');
+      breadcrumb_ele.replaceChildren();
+
+      for (let i = 0; i < breadcrumbList.length; i++) {
+        const folder_name = breadcrumbList[i];
+
+        const ele = document.createElement('li');
+        if (i !== breadcrumbList.length - 1) {
+          const sub_ele = document.createElement('a')
+          sub_ele.href = 'javascript:;';
+          sub_ele.innerText = folder_name;
+          ele.appendChild(sub_ele)
+          ele.onclick = () => {
+            let index = breadcrumbList.indexOf(folder_name);
+
+            const temp = breadcrumbList.slice(0, index + 1);
+            breadcrumbList = temp;
+
+            handleLoadBreadcrumb();
+            const folder_path = `../${breadcrumbList.join('/')}`;
+            getFiles(`${folder_path}`).then(data => {
+              createElement(data)
+            })
+          };
+        } else {
+          ele.innerText = folder_name;
+        }
+
+        breadcrumb_ele.appendChild(ele);
+
+      }
+
+      let filePath = [...breadcrumbList];
+      filePath.shift();
+      const filepathInput = document.getElementById('filepath')
+      filepathInput.value = './' + filePath.join('/');
+    }
+
+    function handleGetFileList() {
+      getFiles('../File Organizer').then(data => {
         createElement(data)
       })
-    } else {
-      localStorage.setItem('file-loc', JSON.stringify(`${folder.path}`));
-      // window.location.href = "/ide"
-      window.location.href = "http://localhost:5500/"
+
     }
-  }
 
-  function handleLoadBreadcrumb() {
-    const breadcrumb_ele = document.getElementById('breadcrumb');
-    breadcrumb_ele.replaceChildren();
+    async function getFiles(dir) {
+      const baseUrl = "http://localhost:8080/getFolder";
 
-    for (let i = 0; i < breadcrumbList.length; i++) {
-      const folder_name = breadcrumbList[i];
+      const queryParams = {
+        dirName: dir,
+      };
 
-      const ele = document.createElement('li');
-      if (i !== breadcrumbList.length - 1) {
-        const sub_ele = document.createElement('a')
-        sub_ele.href = 'javascript:;';
-        sub_ele.innerText = folder_name;
-        ele.appendChild(sub_ele)
-        ele.onclick = () => {
-          let index = breadcrumbList.indexOf(folder_name);
-
-          const temp = breadcrumbList.slice(0, index + 1);
-          breadcrumbList = temp;
-
-          handleLoadBreadcrumb();
-          const folder_path = `../${breadcrumbList.join('/')}`;
-          getFiles(`${folder_path}`).then(data => {
-            createElement(data)
-          })
-        };
-      } else {
-        ele.innerText = folder_name;
+      const urlWithQuery = `${baseUrl}?${new URLSearchParams(
+        queryParams
+      ).toString()}`;
+      try {
+        const response = await fetch(urlWithQuery, {
+          method: "GET",
+        });
+        if (response.status != 200) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      } catch (error) {
+        console.error("Fetch Error:", error);
       }
-
-      breadcrumb_ele.appendChild(ele);
-
     }
 
-    let filePath = [...breadcrumbList];
-    filePath.shift();
-    const filepathInput = document.getElementById('filepath')
-    filepathInput.value = './' + filePath.join('/');
-  }
+    async function createElement(data) {
+      document.getElementById('organizer').replaceChildren()
+      // Get the organizer div
+      const organizerDiv = document.getElementById('organizer');
 
-  function handleGetFileList() {
-    getFiles('../File Organizer').then(data => {
-      createElement(data)
-    })
+      // Map the files to elements and append them to the organizer
+      data.forEach(file => {
+        if (file.type === 'Folder') {
+          organizerDiv.appendChild(createFileElement(file));
+        }
 
-  }
-
-  async function getFiles(dir) {
-    const baseUrl = "http://localhost:8080/getFolder";
-
-    const queryParams = {
-      dirName: dir,
-    };
-
-    const urlWithQuery = `${baseUrl}?${new URLSearchParams(
-      queryParams
-    ).toString()}`;
-    try {
-      const response = await fetch(urlWithQuery, {
-        method: "GET",
       });
-      if (response.status != 200) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    } catch (error) {
-      console.error("Fetch Error:", error);
-    }
-  }
-
-  async function createElement(data) {
-    document.getElementById('organizer').replaceChildren()
-    // Get the organizer div
-    const organizerDiv = document.getElementById('organizer');
-
-    // Map the files to elements and append them to the organizer
-    data.forEach(file => {
-      if(file.type === 'Folder'){
-        organizerDiv.appendChild(createFileElement(file));
-      }
-      
-    });
-  }
-
-  function createFileElement(file) {
-// Create the main .folder div
-const folderDiv = document.createElement('div');
-    folderDiv.className = file.type === 'Folder' ? 'folder' : 'file';
-    folderDiv.style.margin = '0px 10px'
-    folderDiv.onclick = () => displayFolderData(file);
-
-    // Create the icon
-    const icon = document.createElement('img');
-    icon.className = 'organizer-icon'
-    // icon.className = 'material-icons';
-    // icon.style.marginBottom = '30px'
-    icon.src = file.type === 'Folder' ? 'http://romogi.com/file-icon.svg' : 'http://romogi.com/document.svg';  // Choose icon based on type
-
-
-    // Create the <h1> for the name
-    const name = document.createElement('div');
-    name.style.fontSize = '12px';
-    name.style.textAlign = 'center'
-    name.textContent = file.name;
-
-    folderDiv.appendChild(icon)
-
-    folderDiv.appendChild(name)
-
-    if (file.type === 'Folder') {
-      // Create the tooltip <p> element
-      const toolTip = document.createElement('p');
-      toolTip.className = 'cooltip';
-      toolTip.textContent = `${file.children?.length || 0} folders / ${file.children?.filter(child => child.type === 'file').length || 0} files`;
-      // folderDiv.appendChild(toolTip);
     }
 
+    function createFileElement(file) {
+      // Create the main .folder div
+      const folderDiv = document.createElement('div');
+      folderDiv.className = file.type === 'Folder' ? 'folder' : 'file';
+      folderDiv.style.margin = '0px 10px'
+      folderDiv.onclick = () => displayFolderData(file);
+
+      // Create the icon
+      const icon = document.createElement('img');
+      icon.className = 'organizer-icon'
+      // icon.className = 'material-icons';
+      // icon.style.marginBottom = '30px'
+      icon.src = file.type === 'Folder' ? 'http://romogi.com/file-icon.svg' : 'http://romogi.com/document.svg';  // Choose icon based on type
 
 
-    return folderDiv;
-    
-  }
-  
+      // Create the <h1> for the name
+      const name = document.createElement('div');
+      name.style.fontSize = '12px';
+      name.style.textAlign = 'center'
+      name.textContent = file.name;
+
+      folderDiv.appendChild(icon)
+
+      folderDiv.appendChild(name)
+
+      if (file.type === 'Folder') {
+        // Create the tooltip <p> element
+        const toolTip = document.createElement('p');
+        toolTip.className = 'cooltip';
+        toolTip.textContent = `${file.children?.length || 0} folders / ${file.children?.filter(child => child.type === 'file').length || 0} files`;
+        // folderDiv.appendChild(toolTip);
+      }
+
+
+
+      return folderDiv;
+
+    }
+
+    setInterval(checkIfWindowClosed, 1000);
   </script>
 </body>
 

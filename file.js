@@ -15,7 +15,7 @@ async function saveData(fullPath, name) {
       headers: {
         "Content-Type": "text/html",
       },
-      body: name,
+      body: editor.innerText,
     });
     if (response.status != 200) {
       throw new Error(`HTTP error! status: ${response}`);
@@ -25,9 +25,47 @@ async function saveData(fullPath, name) {
     console.error("Fetch Error:", error);
   }
 }
-async function updateData() {
+
+
+async function createFile(fullPath, name) {
+  const baseUrl = "http://localhost:8080/createFile";
+  const queryParams = {
+    dirName: fullPath,
+    fileName: name,
+  };
+  const urlWithQuery = `${baseUrl}?${new URLSearchParams(
+    queryParams
+  ).toString()}`;
+
   try {
-    let dir = JSON.parse(localStorage.getItem("file-loc"));
+    const response = await fetch(urlWithQuery, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/html",
+      },
+      body: `<!DOCTYPE html>
+      <html>
+          <!-- Create an IoT GUI -->
+          <head>
+              <title></title>
+          </head>
+          <body>
+          </body>
+      </html>
+      `,
+    });
+    if (response.status != 200) {
+      throw new Error(`HTTP error! status: ${response}`);
+    }
+    const data = await response.json();
+  } catch (error) {
+    console.error("Fetch Error:", error);
+  }
+}
+
+
+async function updateData(dir) {
+  try {
     const baseUrl = "http://localhost:8080/updateFile";
 
     const queryParams = {
@@ -157,7 +195,7 @@ async function deleteFolder(fullPath) {
   }
 }
 
-async function getFiles(dir) {
+async function getFolder(dir) {
   const baseUrl = "http://localhost:8080/getFolder";
 
   const queryParams = {
@@ -194,6 +232,7 @@ async function createNewFile() {
     "&lt;/html>",
   ];
   editor.innerText = "";
+  localStorage.setItem('file-loc', null)
   for (let i = 0; i < initialCode.length; i++) {
     document
       .getElementById("editor")
@@ -203,10 +242,7 @@ async function createNewFile() {
 }
 
 async function Open() {
-  // [fileHandle] = await window.showOpenFilePicker();
-  // let fileData = await fileHandle.getFile();
-  // let text = await fileData.text();
-  // editor.innerText = text;
+  sessionStorage.setItem('resultPageOpen', 'false')
   window.location.href = "/fileOrganizer.html";
 }
 
@@ -331,7 +367,6 @@ getData()
 
 async function getData() {
   let dir = JSON.parse(localStorage.getItem('file-loc'));
-  console.log('dir ', dir)
 
   getFiles(dir).then(data => {
     let initial = data.data.split('\n')
@@ -382,7 +417,6 @@ function markResultPageClose() {
 
 document.getElementsById('runoption').addEventListener('click', function () {
   if (isResultPageOpen()) {
-    console.log('here ===============> run code')
   } else {
     window.open('/run')
     markResultPageOpen()
@@ -397,16 +431,22 @@ window.addEventListener('beforeunload', function () {
 var newTab
 async function runCode() {
   if (isResultPageOpen()) {
-    await newTab.focus();
+    try {
+      newTab.focus();
+      window.location.reload()
+    } catch (e) {
+      console.error("Unable to switch to the new tab:", e);
+    }
   } else {
-    newTab = window.open('http://localhost:8080/runFile', '_blank');
+    let dir = JSON.parse(localStorage.getItem("file-loc"));
+    newTab = window.open(`http://localhost:8080/runFile?dirName=${dir}`, '_blank');
     markResultPageOpen()
   }
 }
 
 function checkIfWindowClosed() {
+  console.log('check window close', newTab?.close)
   if (newTab?.closed) {
-    console.log('check interval')
     sessionStorage.setItem('resultPageOpen', 'false');
     clearInterval(checkInterval);
   }

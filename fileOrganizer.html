@@ -396,7 +396,8 @@
 
 <script>
   let breadcrumbList = ['File Organizer']
-  async function getFiles(dir) {
+  let folderPath;
+  async function getFolder(dir) {
     const baseUrl = "http://localhost:8080/getFolder";
 
     const queryParams = {
@@ -420,7 +421,7 @@
   }
 
   function handleGetFileList() {
-    getFiles('../File Organizer').then(data => {
+    getFolder('../File Organizer').then(data => {
       createElement(data)
     })
 
@@ -432,9 +433,9 @@
       const list = folder.path.split('/')
       list.shift();
       breadcrumbList = list;
+      folderPath = folder.path
       handleLoadBreadcrumb();
-
-      getFiles(`${folder.path}`).then(data => {
+      getFolder(`${folder.path}`).then(data => {
         createElement(data)
       })
     } else {
@@ -444,7 +445,7 @@
     }
   }
 
-  async function getFiles(dir) {
+  async function getFolder(dir) {
     const baseUrl = "http://localhost:8080/getFolder";
 
     const queryParams = {
@@ -527,7 +528,6 @@
   function handleLoadBreadcrumb() {
     const breadcrumb_ele = document.getElementById('breadcrumb');
     breadcrumb_ele.replaceChildren();
-
     for (let i = 0; i < breadcrumbList.length; i++) {
       const folder_name = breadcrumbList[i];
 
@@ -545,7 +545,7 @@
 
           handleLoadBreadcrumb();
           const folder_path = `../${breadcrumbList.join('/')}`;
-          getFiles(`${folder_path}`).then(data => {
+          getFolder(`${folder_path}`).then(data => {
             createElement(data)
           })
         };
@@ -616,12 +616,11 @@
     btn.onclick = function () {
       const fullPath = '../' + breadcrumbList.join('/');
       const name = document.getElementById('name').value + (val === 'file' ? '.html' : '')
-      console.log('hello create folder/file.....\nfilepath = ', fullPath, '\nname = ', name)
       if (val === 'file') {
-        saveData(fullPath, name)
+        createFile(folderPath == undefined ? fullPath : folderPath, name)
         window.location.reload()
       } else {
-        createFolder(fullPath, name)
+        createFolder(folderPath == undefined ? fullPath : folderPath, name)
         window.location.reload()
       }
 
@@ -638,7 +637,6 @@
       var deleteEle = delete_ele[j];
       deleteEle.style.display = 'none';
     }
-    console.log('delete folder/file ....\npath => ', file.path, '\nname => ', file.name)
     deleteFolder(file.path)
   }
 
