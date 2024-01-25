@@ -20,7 +20,9 @@ async function saveData(fullPath, name) {
     if (response.status != 200) {
       throw new Error(`HTTP error! status: ${response}`);
     }
-    const data = await response.json();
+    if(response.status == 200){
+      window.alert('successfully save!')
+    }
   } catch (error) {
     console.error("Fetch Error:", error);
   }
@@ -90,7 +92,7 @@ async function updateData(dir) {
     }
 
     // Handle success, update UI accordingly
-    console.log("File update successful!");
+    window.alert('successfully save!')
   } catch (err) {
     console.error("Failed to update data:", err);
     // Handle errors, such as showing a message to the user
@@ -446,7 +448,9 @@ var newTab
 
 async function runCode() {
   let dir = JSON.parse(localStorage.getItem("file-loc"));
-    window.location.href = `/run-sandbox?dirName=${dir}`
+    // window.location.href = `/run-sandbox?dirName=${dir}`
+    
+    window.location.href = `http://localhost:5500/autoreload.html`
 }
 
 function checkIfWindowClosed() {

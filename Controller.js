@@ -46,13 +46,12 @@ app.get("/readFile", (req, res) => {
 
 app.get("/runFile", (req, res) => {
   const { dirName } = req.query;
-  const path = './autoreload.html'
   fs.readFile(dirName, "utf8", (err, data) => {
     const result = data
     if (err) {
       res.status(400).send(err);
     }
-    res.status(200).send(result);
+    res.send(result);
   });
 })
 
