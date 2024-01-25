@@ -416,6 +416,17 @@
 
 <body>
   <script>
+    window.addEventListener('load', function() {
+    localStorage.setItem('ideOpen', true)
+  })
+
+  window.addEventListener('storage', function(event) {
+        if (event.key === 'toggleWYSIWYG') {
+            const receivedData = event.newValue;
+            window.close()
+        }
+    });
+
     window.onclick = function (event) {
       if (!event.target.matches('.check')) {
         var dropdowns = document.getElementsByClassName("submenu");

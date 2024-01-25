@@ -448,8 +448,7 @@ var newTab
 
 async function runCode() {
   let dir = JSON.parse(localStorage.getItem("file-loc"));
-  localStorage.setItem('sandboxOpen', true)
-    // window.location.href = `/run-sandbox?dirName=${dir}`
+  
     const sandboxOpen = JSON.parse(localStorage.getItem('sandboxOpen'));
     if(sandboxOpen){
       const toggleWYSIWYG = JSON.parse(localStorage.getItem('toggleWYSIWYG'));
@@ -457,7 +456,6 @@ async function runCode() {
     }
     
     window.open(`http://localhost:5500/sandbox.html`);
-    localStorage.setItem('sandboxOpen', true)
     
 }
 
@@ -490,7 +488,7 @@ function toggleFullscreen() {
 function wysiwyg(){
   
   const sandboxOpen = JSON.parse(localStorage.getItem('sandboxOpen'));
-  console.log('sandboxOpen', sandboxOpen)
+  
   if(sandboxOpen){
     const toggleWYSIWYG = JSON.parse(localStorage.getItem('toggleWYSIWYG'));
     localStorage.setItem('toggleWYSIWYG', !toggleWYSIWYG);

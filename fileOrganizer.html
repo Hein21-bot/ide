@@ -615,12 +615,15 @@
     btn.innerText = 'Create';
     btn.onclick = function () {
       const fullPath = '../' + breadcrumbList.join('/');
-      const name = document.getElementById('name').value + (val === 'file' ? '.html' : '')
+      const name = document.getElementById('name').value + (val === 'file' ? '.html' : '');
+      
       if (val === 'file') {
-        createFile(folderPath == undefined ? fullPath : folderPath, name)
+        console.log(fullPath)
+        createFile(fullPath, name)
         window.location.reload()
       } else {
-        createFolder(folderPath == undefined ? fullPath : folderPath, name)
+
+        createFolder(fullPath, name)
         window.location.reload()
       }
 
@@ -637,7 +640,8 @@
       var deleteEle = delete_ele[j];
       deleteEle.style.display = 'none';
     }
-    deleteFolder(file.path)
+    deleteFolder(file.path);
+    window.location.reload();
   }
 
 </script>
