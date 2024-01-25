@@ -244,7 +244,7 @@ async function createNewFile() {
 }
 
 async function Open() {
-  sessionStorage.setItem('resultPageOpen', 'false')
+  sessionStorage.setItem('sandboxOpen', 'false')
   window.location.href = "/fileOrganizer.html";
 }
 
@@ -406,15 +406,15 @@ async function getFiles(dir) {
 
 
 function isResultPageOpen() {
-  return sessionStorage.getItem('resultPageOpen') === 'true'
+  return sessionStorage.getItem('sandboxOpen') === 'true'
 }
 
 function markResultPageOpen() {
-  sessionStorage.setItem('resultPageOpen', 'true')
+  sessionStorage.setItem('sandboxOpen', 'true')
 }
 
 function markResultPageClose() {
-  sessionStorage.setItem('resultPageOpen', 'false')
+  sessionStorage.setItem('sandboxOpen', 'false')
 }
 
 document.getElementsById('runoption').addEventListener('click', function () {
@@ -448,19 +448,27 @@ var newTab
 
 async function runCode() {
   let dir = JSON.parse(localStorage.getItem("file-loc"));
+  localStorage.setItem('sandboxOpen', true)
     // window.location.href = `/run-sandbox?dirName=${dir}`
+    const sandboxOpen = JSON.parse(localStorage.getItem('sandboxOpen'));
+    if(sandboxOpen){
+      const toggleWYSIWYG = JSON.parse(localStorage.getItem('toggleWYSIWYG'));
+      localStorage.setItem('toggleWYSIWYG', !toggleWYSIWYG);
+    }
     
-    window.location.href = `http://localhost:5500/autoreload.html`
+    window.open(`http://localhost:5500/sandbox.html`);
+    localStorage.setItem('sandboxOpen', true)
+    
 }
 
-function checkIfWindowClosed() {
-  console.log('check window close', newTab?.close)
-  if (newTab?.closed) {
-    sessionStorage.setItem('resultPageOpen', 'false');
-    clearInterval(checkInterval);
-  }
-}
-let checkInterval = setInterval(checkIfWindowClosed, 1000);
+// function checkIfWindowClosed() {
+//   console.log('check window close', newTab?.close)
+//   if (newTab?.closed) {
+//     sessionStorage.setItem('sandboxOpen', 'false');
+//     // clearInterval(checkInterval);
+//   }
+// }
+// let checkInterval = setInterval(checkIfWindowClosed, 1000);
 
 
 function toggleFullscreen() {
@@ -480,6 +488,14 @@ function toggleFullscreen() {
 }
 
 function wysiwyg(){
-  console.log('bla')
-  window.open("https://www.w3schools.com");
+  
+  const sandboxOpen = JSON.parse(localStorage.getItem('sandboxOpen'));
+  console.log('sandboxOpen', sandboxOpen)
+  if(sandboxOpen){
+    const toggleWYSIWYG = JSON.parse(localStorage.getItem('toggleWYSIWYG'));
+    localStorage.setItem('toggleWYSIWYG', !toggleWYSIWYG);
+    window.open(`http://localhost:5500/sandbox.html`);
+  }else{
+    window.location.href = '/sandbox.html'
+  }
 }

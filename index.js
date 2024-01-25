@@ -16,8 +16,8 @@ document.getElementById('saveoption').addEventListener("mouseover", () => change
 document.getElementById("saveoption").addEventListener("mouseout", () => changeText('saveoption', ' Save'));
 document.getElementById('saveasoption').addEventListener("mouseover", () => changeText('saveasoption', ' Ctrl+Shift'));
 document.getElementById("saveasoption").addEventListener("mouseout", () => changeText('saveasoption', ' Save As...'));
-document.getElementById('printoption').addEventListener("mouseover", () => changeText('printoption', ' Ctrl+P'));
-document.getElementById("printoption").addEventListener("mouseout", () => changeText('printoption', ' Print'));
+// document.getElementById('printoption').addEventListener("mouseover", () => changeText('printoption', ' Ctrl+P'));
+// document.getElementById("printoption").addEventListener("mouseout", () => changeText('printoption', ' Print'));
 
 document.getElementById('undooption').addEventListener("mouseover", () => changeText('undooption', ' Ctrl+Z'));
 document.getElementById("undooption").addEventListener("mouseout", () => changeText('undooption', ' Undo'));
@@ -32,8 +32,8 @@ document.getElementById("pasteoption").addEventListener("mouseout", () => change
 document.getElementById('selectalloption').addEventListener("mouseover", () => changeText('selectalloption', ' Ctrl+A'));
 document.getElementById("selectalloption").addEventListener("mouseout", () => changeText('selectalloption', ' Select All'));
 
-document.getElementById('mathoption').addEventListener("mouseover", () => changeText('mathoption', ' Ctrl+M'));
-document.getElementById("mathoption").addEventListener("mouseout", () => changeText('mathoption', ' Math'));
+// document.getElementById('mathoption').addEventListener("mouseover", () => changeText('mathoption', ' Ctrl+M'));
+// document.getElementById("mathoption").addEventListener("mouseout", () => changeText('mathoption', ' Math'));
 document.getElementById('codeoption').addEventListener("mouseover", () => changeText('codeoption', ' Ctrl+T'));
 document.getElementById("codeoption").addEventListener("mouseout", () => changeText('codeoption', ' Code'));
 document.getElementById('fullscreenoption').addEventListener("mouseover", () => changeText('fullscreenoption', ' F11'));
