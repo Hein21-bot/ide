@@ -416,15 +416,15 @@
 
 <body>
   <script>
-    window.addEventListener('load', function() {
-    localStorage.setItem('ideOpen', true)
-  })
+    window.addEventListener('load', function () {
+      localStorage.setItem('ideOpen', true)
+    })
 
-  window.addEventListener('storage', function(event) {
-        if (event.key === 'toggleWYSIWYG') {
-            const receivedData = event.newValue;
-            window.close()
-        }
+    window.addEventListener('storage', function (event) {
+      if (event.key === 'toggleWYSIWYG') {
+        const receivedData = event.newValue;
+        window.close()
+      }
     });
 
     window.onclick = function (event) {
@@ -708,9 +708,374 @@
   </div>
   <!-- Create Folder/File Modal -->
 
-  <script src="index.js"></script>
-  <script src="file.js"></script>
   <script>
+    //var node = document.getElementById('cat').innerText.replace(/\s{2,}/g,'\t','').trim();
+
+    function changeText(id, text) {
+      document.getElementById(id).lastChild.data = text;
+    }
+
+    document.getElementById('newoption').addEventListener("mouseover", () => changeText('newoption', ' Ctrl+N'));
+    document.getElementById("newoption").addEventListener("mouseout", () => changeText('newoption', ' New'));
+    document.getElementById('openoption').addEventListener("mouseover", () => changeText('openoption', ' Ctrl+O'));
+    document.getElementById("openoption").addEventListener("mouseout", () => changeText('openoption', ' Open'));
+    document.getElementById('runoption').addEventListener("mouseover", () => changeText('runoption', ' Ctrl+R'));
+    document.getElementById("runoption").addEventListener("mouseout", () => changeText('runoption', ' Run'));
+    document.getElementById('saveoption').addEventListener("mouseover", () => changeText('saveoption', ' Ctrl+S'));
+    document.getElementById("saveoption").addEventListener("mouseout", () => changeText('saveoption', ' Save'));
+    document.getElementById('saveasoption').addEventListener("mouseover", () => changeText('saveasoption', ' Ctrl+Shift'));
+    document.getElementById("saveasoption").addEventListener("mouseout", () => changeText('saveasoption', ' Save As...'));
+    // document.getElementById('printoption').addEventListener("mouseover", () => changeText('printoption', ' Ctrl+P'));
+    // document.getElementById("printoption").addEventListener("mouseout", () => changeText('printoption', ' Print'));
+
+    document.getElementById('undooption').addEventListener("mouseover", () => changeText('undooption', ' Ctrl+Z'));
+    document.getElementById("undooption").addEventListener("mouseout", () => changeText('undooption', ' Undo'));
+    document.getElementById('redooption').addEventListener("mouseover", () => changeText('redooption', ' Ctrl+Y'));
+    document.getElementById("redooption").addEventListener("mouseout", () => changeText('redooption', ' Redo'));
+    document.getElementById('cutoption').addEventListener("mouseover", () => changeText('cutoption', ' Ctrl+X'));
+    document.getElementById("cutoption").addEventListener("mouseout", () => changeText('cutoption', ' Cut'));
+    document.getElementById('copyoption').addEventListener("mouseover", () => changeText('copyoption', ' Ctrl+C'));
+    document.getElementById("copyoption").addEventListener("mouseout", () => changeText('copyoption', ' Copy'));
+    document.getElementById('pasteoption').addEventListener("mouseover", () => changeText('pasteoption', ' Ctrl+V'));
+    document.getElementById("pasteoption").addEventListener("mouseout", () => changeText('pasteoption', ' Paste'));
+    document.getElementById('selectalloption').addEventListener("mouseover", () => changeText('selectalloption', ' Ctrl+A'));
+    document.getElementById("selectalloption").addEventListener("mouseout", () => changeText('selectalloption', ' Select All'));
+
+    // document.getElementById('mathoption').addEventListener("mouseover", () => changeText('mathoption', ' Ctrl+M'));
+    // document.getElementById("mathoption").addEventListener("mouseout", () => changeText('mathoption', ' Math'));
+    document.getElementById('codeoption').addEventListener("mouseover", () => changeText('codeoption', ' Ctrl+T'));
+    document.getElementById("codeoption").addEventListener("mouseout", () => changeText('codeoption', ' Code'));
+    document.getElementById('fullscreenoption').addEventListener("mouseover", () => changeText('fullscreenoption', ' F11'));
+    document.getElementById("fullscreenoption").addEventListener("mouseout", () => changeText('fullscreenoption', ' Full Screen'));
+    document.getElementById('wysiwygoption').addEventListener("mouseover", () => changeText('wysiwygoption', ' Ctrl+W'));
+    document.getElementById("wysiwygoption").addEventListener("mouseout", () => changeText('wysiwygoption', ' WYSIWYG'));
+
+    //This function is to uncheck any open submenus that were open when new submenu is clicked. Only one submenu can possibly stay open at a time.
+    var checkboxes = ["check01", "check02", "check03"];
+
+    function toggleOffPreviouslyChecked(checkedID) {
+      var difference = checkboxes.filter(x => [checkedID].indexOf(x) === -1);
+      for (let j = 0; j < difference.length; j++) {
+        if (true == document.getElementById(difference[j]).checked) {
+          document.getElementById(difference[j]).click();
+        }
+      }
+    }
+
+    for (let i = 0; i < checkboxes.length; i++) {
+      document.getElementById(checkboxes[i]).addEventListener('change', e => {
+        if (e.target.checked) {
+          toggleOffPreviouslyChecked(checkboxes[i]);
+        }
+      });
+    }
+    //Below are the variables and event handlers for changing the project name. A lot was done from scratch so it is customizable.
+    var originalProjectNameInnerText = document.getElementById('projectname').innerText;
+    var originalProjectNameSVG = document.getElementById('editprojectname').outerHTML;
+
+
+
+    document.getElementById('projectname').addEventListener("click", (e) => {
+      document.querySelector(':root').style.setProperty('--projectnamecaretcolor', 'rgba(255,255,255,1)');
+      document.getElementById('editprojectname').outerHTML = '';
+      document.getElementById('projectname').innerHTML = '';
+
+      window.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          if (document.getElementById('projectname').innerText.trim() == '') {
+            document.getElementById('projectname').innerHTML = originalProjectNameInnerText + originalProjectNameSVG;
+            document.querySelector(':root').style.setProperty('--projectnamecaretcolor', 'transparent');
+          }
+          else {
+            document.getElementById('projectname').innerHTML = document.getElementById('projectname').innerText + originalProjectNameSVG;
+            document.querySelector(':root').style.setProperty('--projectnamecaretcolor', 'transparent');
+          }
+        }
+      });
+
+    });
+
+    var initialCode = [("&lt;!DOCTYPE html>"), "&lt;html>", "&lt;!-- Create an IoT GUI -->", "&lt;title>&lt;/title>", "&lt;head>", "&emsp;&lt;meta name='topic' content=''>", "&emsp;&lt;meta name='description' content=''>", "&emsp;&lt;meta name='copyright' content=''>", "&emsp;&lt;meta charset='utf-16'>", "&emsp;&lt;meta name='language' content=''>",
+      "&emsp;&lt;meta name='revised' content=''>", "&emsp;&lt;meta name='robots' content=''>", "<br>", "&emsp;&lt;script type='text/javascript' src=''><∕script>", "<br>", "&emsp;&lt;link rel='shortcut icon' href='' type='image/x-icon'>", "&emsp;&lt;link rel='stylesheet' type='text/css' href=''>", "&emsp;&lt;link rel='shortcut icon' href='' type='image/x-icon'>",
+      "&emsp;&lt;style type='text/css'>", "&emsp;&lt;∕style>", "&lt;∕head>", "<br>", "&lt;body>", "&emsp;&lt;script>", "&emsp;&emsp;//variables", "<br>", "&emsp;&emsp;//arrays", "<br>", "&emsp;&emsp;//linked lists", "<br>", "&emsp;&emsp;//functions", "<br>", "&emsp;&emsp;//event handlers", "<br>", "&emsp;&lt;/script>", "&emsp;&lt;/body>", "&lt;/html>",
+    ];
+
+    for (let i = 0; i < initialCode.length; i++) {
+      // document.getElementById('editor').appendChild(document.createElement('span')).innerHTML = initialCode[i];
+    }
+  </script>
+  <!-- <script src="file.js"></script> -->
+  <script>
+
+    async function createNewFile() {
+      var initialCode = [
+        "&lt;!DOCTYPE html>",
+        "&lt;html>",
+        "&lt;!-- Create an IoT GUI -->",
+        "&lt;title>&lt;/title>",
+        "&lt;head>",
+        "&lt;/head>",
+        "<br>",
+        "&lt;body>",
+        "&lt;/body>",
+        "&lt;/html>",
+      ];
+      editor.innerText = "";
+      localStorage.setItem('file-loc', null)
+      for (let i = 0; i < initialCode.length; i++) {
+        document
+          .getElementById("editor")
+          .appendChild(document.createElement("span")).innerHTML = initialCode[i];
+      }
+      // editor.innerText = "Hello World!";
+    }
+    async function Open() {
+      sessionStorage.setItem('sandboxOpen', 'false')
+      window.location.href = "/fileOrganizer.html";
+    }
+    async function runCode() {
+      let dir = JSON.parse(localStorage.getItem("file-loc"));
+
+      const sandboxOpen = JSON.parse(localStorage.getItem('sandboxOpen'));
+      if (sandboxOpen) {
+        const toggleWYSIWYG = JSON.parse(localStorage.getItem('toggleWYSIWYG'));
+        localStorage.setItem('toggleWYSIWYG', !toggleWYSIWYG);
+      }
+
+      window.open(`http://localhost:5500/sandbox.html`);
+
+    }
+
+
+    async function updateData(dir) {
+      try {
+        const baseUrl = "http://localhost:8080/updateFile";
+
+        const queryParams = {
+          fileName: projectname.innerText, // Ensure 'projectname' is defined and accessible
+          dirName: dir,
+        };
+
+        const urlWithQuery = `${baseUrl}?${new URLSearchParams(
+          queryParams
+        ).toString()}`;
+
+        const response = await fetch(urlWithQuery, {
+          method: "POST",
+          headers: {
+            "Content-Type": "text/html", // Ensure the server is expecting 'text/html'
+          },
+          body: editor.innerText, // Ensure 'editor' is defined and accessible
+        });
+
+        if (response.status !== 200) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // Handle success, update UI accordingly
+        window.alert('successfully save!')
+      } catch (err) {
+        console.error("Failed to update data:", err);
+        // Handle errors, such as showing a message to the user
+      }
+    }
+
+
+    async function saveData(fullPath, name) {
+      const baseUrl = "http://localhost:8080/createFile";
+      const queryParams = {
+        dirName: fullPath,
+        fileName: name,
+      };
+      const urlWithQuery = `${baseUrl}?${new URLSearchParams(
+        queryParams
+      ).toString()}`;
+      try {
+        const response = await fetch(urlWithQuery, {
+          method: "POST",
+          headers: {
+            "Content-Type": "text/html",
+          },
+          body: editor.innerText,
+        });
+        if (response.status != 200) {
+          throw new Error(`HTTP error! status: ${response}`);
+        }
+        if (response.status == 200) {
+          window.alert('successfully save!')
+        }
+      } catch (error) {
+        console.error("Fetch Error:", error);
+      }
+    }
+
+    async function undo() {
+      try {
+        // Execute the undo command
+        document.execCommand("undo", false, null);
+      } catch (err) {
+        console.log("Oops, unable to undo");
+      }
+    }
+
+    async function redo() {
+      try {
+        // Execute the redo command
+        document.execCommand("redo", false, null);
+      } catch (err) {
+        console.log("Oops, unable to redo");
+      }
+    }
+
+
+    async function copy() {
+      try {
+        // Execute the copy command
+        document.execCommand("copy");
+      } catch (err) {
+        console.log("Oops, unable to copy");
+      }
+    }
+
+    async function paste() {
+      navigator.clipboard
+        .readText()
+        .then((text) => {
+          // Get the contenteditable element
+          var editor = document.getElementById("editor");
+
+          // Get the current selection
+          var sel = window.getSelection();
+          if (sel.rangeCount > 0) {
+            // Get the first range of the selection
+            var range = sel.getRangeAt(0);
+
+            // Delete the contents of the range (if any selection is made)
+            range.deleteContents();
+
+            // Create a new text node and insert it
+            var textNode = document.createTextNode(text);
+            range.insertNode(textNode);
+
+            // Move the caret to the end of the inserted text
+            range.setStartAfter(textNode);
+            range.collapse(true); // Collapse the range to the end point
+
+            // Update the selection with the new range
+            sel.removeAllRanges();
+            sel.addRange(range);
+          } else {
+            // If there's no selection, simply append the text
+            editor.innerText += text;
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to read clipboard contents:", err);
+        });
+    }
+
+    async function cut() {
+      try {
+        // Execute the cut command
+        document.execCommand("cut", false, null);
+      } catch (err) {
+        console.log("Oops, unable to cut");
+      }
+    }
+
+    async function selectAll() {
+      try {
+        // Get the contenteditable element
+        var text = document.getElementById("editor");
+
+        // Create a range
+        var range = document.createRange();
+        range.selectNodeContents(text);
+
+        // Get the selection object
+        var selection = window.getSelection();
+
+        // Remove any current ranges
+        selection.removeAllRanges();
+
+        // Add the new range
+        selection.addRange(range);
+      } catch (err) {
+        console.log("Oops, unable to select all", err);
+      }
+    }
+
+
+    function toggleFullscreen() {
+      const element = document.documentElement;
+
+      if (document.fullscreenElement) {
+        // If already in fullscreen, exit fullscreen
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      } else {
+        // If not in fullscreen, enter fullscreen
+        if (element.requestFullscreen) {
+          element.requestFullscreen();
+        }
+      }
+    }
+
+    function wysiwyg() {
+
+      const sandboxOpen = JSON.parse(localStorage.getItem('sandboxOpen'));
+
+      if (sandboxOpen) {
+        const toggleWYSIWYG = JSON.parse(localStorage.getItem('toggleWYSIWYG'));
+        localStorage.setItem('toggleWYSIWYG', !toggleWYSIWYG);
+        window.open(`http://localhost:5500/sandbox.html`);
+      } else {
+        window.location.href = '/sandbox.html'
+      }
+    }
+
+
+    getData()
+
+    async function getData() {
+      let dir = JSON.parse(localStorage.getItem('file-loc'));
+
+      readFiles(dir).then(data => {
+        let initial = data.data.split('\n')
+          .map(line => line.replace(/</g, '&lt;'));
+        for (let i = 0; i < initial.length; i++) {
+          document.getElementById('editor').appendChild(document.createElement('span')).innerHTML = initial[i];
+        }
+        // document.getElementById('editor').appendChild(document.createElement('span')).innerHTML = data.data
+      })
+
+    }
+
+    async function readFiles(dir) {
+      const baseUrl = "http://localhost:8080/readFile";
+
+      const queryParams = {
+        dirName: dir,
+      };
+
+      const urlWithQuery = `${baseUrl}?${new URLSearchParams(
+        queryParams
+      ).toString()}`;
+      try {
+        const response = await fetch(urlWithQuery, {
+          method: "GET",
+        });
+        if (response.status != 200) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      } catch (error) {
+        console.error("Fetch Error:", error);
+      }
+    }
+
     var modal = document.getElementById("myModal");
     var modal_content = document.getElementById("myModalContent");
 
@@ -949,8 +1314,6 @@
       return folderDiv;
 
     }
-
-    setInterval(checkIfWindowClosed, 1000);
   </script>
 </body>
 

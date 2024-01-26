@@ -420,6 +420,83 @@
     }
   }
 
+  async function createFolder(fullPath, name) {
+    const baseUrl = "http://localhost:8080/createFolder";
+
+    const queryParams = {
+      dirName: fullPath,
+      folderName: name
+    };
+
+    const urlWithQuery = `${baseUrl}?${new URLSearchParams(
+      queryParams
+    ).toString()}`;
+    try {
+      const response = await fetch(urlWithQuery, {
+        method: "GET",
+      });
+      if (response.status != 200) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+    } catch (error) {
+      console.error("Fetch Error:", error);
+    }
+  }
+
+  async function createFile(fullPath, name) {
+    const baseUrl = "http://localhost:8080/createFile";
+    const queryParams = {
+      dirName: fullPath,
+      fileName: name,
+    };
+    const urlWithQuery = `${baseUrl}?${new URLSearchParams(
+      queryParams
+    ).toString()}`;
+
+    try {
+      const bodyData = `<!DOCTYPE html>
+      <html>
+      </html>`
+      const response = await fetch(urlWithQuery, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/html",
+        },
+        body: bodyData,
+      });
+      if (response.status != 200) {
+        throw new Error(`HTTP error! status: ${response}`);
+      }
+      const data = await response.json();
+    } catch (error) {
+      console.error("Fetch Error:", error);
+    }
+  }
+
+  async function deleteFolder(fullPath) {
+    const baseUrl = "http://localhost:8080/deleteFolder";
+
+    const queryParams = {
+      dirName: fullPath
+    };
+
+    const urlWithQuery = `${baseUrl}?${new URLSearchParams(
+      queryParams
+    ).toString()}`;
+    try {
+      const response = await fetch(urlWithQuery, {
+        method: "DELETE",
+      });
+      if (response.status != 200) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+    } catch (error) {
+      console.error("Fetch Error:", error);
+    }
+  }
+
   function handleGetFileList() {
     getFolder('../File Organizer').then(data => {
       createElement(data)
@@ -445,28 +522,6 @@
     }
   }
 
-  async function getFolder(dir) {
-    const baseUrl = "http://localhost:8080/getFolder";
-
-    const queryParams = {
-      dirName: dir,
-    };
-
-    const urlWithQuery = `${baseUrl}?${new URLSearchParams(
-      queryParams
-    ).toString()}`;
-    try {
-      const response = await fetch(urlWithQuery, {
-        method: "GET",
-      });
-      if (response.status != 200) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    } catch (error) {
-      console.error("Fetch Error:", error);
-    }
-  }
 
   async function createElement(data) {
     document.getElementById('organizer').replaceChildren()
@@ -616,7 +671,7 @@
     btn.onclick = function () {
       const fullPath = '../' + breadcrumbList.join('/');
       const name = document.getElementById('name').value + (val === 'file' ? '.html' : '');
-      
+
       if (val === 'file') {
         console.log(fullPath)
         createFile(fullPath, name)
@@ -645,9 +700,5 @@
   }
 
 </script>
-<!-- <script src="index.js"></script> -->
-
-<!-- <script src="file.js"></script> -->
-<script src="file.js"></script>
 
 </html>
