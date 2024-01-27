@@ -836,7 +836,7 @@
     }
     async function Open() {
       sessionStorage.setItem('sandboxOpen', 'false')
-      window.location.href = "/fileOrganizer.html";
+      window.location.href = "/file-organizer";
     }
     async function runCode() {
       let dir = JSON.parse(localStorage.getItem("file-loc"));
@@ -847,7 +847,7 @@
         localStorage.setItem('toggleWYSIWYG', !toggleWYSIWYG);
       }
 
-      window.open(`http://localhost:5500/sandbox.html`);
+      window.open(`http://localhost:8080/run-sandbox`);
 
     }
 
@@ -1034,9 +1034,9 @@
       if (sandboxOpen) {
         const toggleWYSIWYG = JSON.parse(localStorage.getItem('toggleWYSIWYG'));
         localStorage.setItem('toggleWYSIWYG', !toggleWYSIWYG);
-        window.open(`http://localhost:5500/sandbox.html`);
+        window.open(`http://localhost:8080/run-sandbox`);
       } else {
-        window.location.href = '/sandbox.html'
+        window.location.href = '/run-sandbox'
       }
     }
 
@@ -1193,7 +1193,7 @@
       } else {
         localStorage.setItem('file-loc', JSON.stringify(`${folder.path}`));
         // window.location.href = "/ide"
-        window.location.href = "http://localhost:5500/"
+        window.location.href = "http://localhost:8080/"
       }
     }
 

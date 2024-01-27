@@ -468,9 +468,9 @@
       if (ideOpen) {
         const toggleIDE = JSON.parse(localStorage.getItem('toggleIDE'));
         localStorage.setItem('toggleIDE', !toggleIDE);
-        window.open(`http://localhost:5500`);
+        window.open(`http://localhost:8080/ide`);
       } else {
-        window.location.href = '/'
+        window.location.href = '/ide'
       }
     }
 
@@ -489,12 +489,12 @@
 
 
     function codeVersion() {
-      window.location.href = '/'
+      window.location.href = '/ide'
     }
 
     async function Open() {
       sessionStorage.setItem('sandboxOpen', 'false')
-      window.location.href = "/fileOrganizer.html";
+      window.location.href = "/file-organizer";
     }
 
     function toggleFullscreen() {

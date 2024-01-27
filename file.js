@@ -245,7 +245,7 @@ async function createNewFile() {
 
 async function Open() {
   sessionStorage.setItem('sandboxOpen', 'false')
-  window.location.href = "/fileOrganizer.html";
+  window.location.href = "/ide";
 }
 
 async function save() {
@@ -455,7 +455,7 @@ async function runCode() {
       localStorage.setItem('toggleWYSIWYG', !toggleWYSIWYG);
     }
     
-    window.open(`http://localhost:5500/sandbox.html`);
+    window.open(`http://localhost:8080/run-sandbox`);
     
 }
 
@@ -492,8 +492,8 @@ function wysiwyg(){
   if(sandboxOpen){
     const toggleWYSIWYG = JSON.parse(localStorage.getItem('toggleWYSIWYG'));
     localStorage.setItem('toggleWYSIWYG', !toggleWYSIWYG);
-    window.open(`http://localhost:5500/sandbox.html`);
+    window.open(`http://localhost:8080/run-sandbox`);
   }else{
-    window.location.href = '/sandbox.html'
+    window.location.href = '/run-sandbox'
   }
 }
