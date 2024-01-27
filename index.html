@@ -421,8 +421,8 @@
     })
 
     window.addEventListener('beforeunload', function () {
-    localStorage.removeItem('ideOpen')
-  });
+      localStorage.removeItem('ideOpen')
+    });
 
     window.addEventListener('storage', function (event) {
       if (event.key === 'toggleWYSIWYG') {
@@ -836,7 +836,7 @@
     }
     async function Open() {
       sessionStorage.setItem('sandboxOpen', 'false')
-      window.location.href = "/file-organizer";
+      window.location.href = "/";
     }
     async function runCode() {
       let dir = JSON.parse(localStorage.getItem("file-loc"));
@@ -1321,12 +1321,53 @@
 
     document.addEventListener('keydown', function (event) {
       // Check if the pressed key is 'n' and Ctrl (or Command) is pressed
-      if ((event.ctrlKey || event.metaKey) && event.key === 'n') {
+      if ((event.ctrlKey || event.metaKey)  && event.key === 'n') {
         event.preventDefault(); // Prevent the default action (e.g., opening a new window)
-        
+
         createNewFile()
       }
     });
+
+    document.addEventListener('keydown', function (event) {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'o') {
+        event.preventDefault();
+
+        Open()
+      }
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'r') {
+        event.preventDefault();
+
+        runCode()
+      }
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+        event.preventDefault();
+
+        handleSave()
+      }
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if ((event.ctrlKey || event.metaKey) && event.shiftKey) {
+        event.preventDefault();
+
+        handleSaveAs()
+      }
+    });
+
+    document.addEventListener('keydown', async function (event) {
+      if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'w') {
+        await event.preventDefault();
+
+        await wysiwyg()
+      }
+    });
+
 
   </script>
 </body>

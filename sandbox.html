@@ -494,7 +494,7 @@
 
     async function Open() {
       sessionStorage.setItem('sandboxOpen', 'false')
-      window.location.href = "/file-organizer";
+      window.location.href = "/";
     }
 
     function toggleFullscreen() {
@@ -512,6 +512,31 @@
         }
       }
     }
+
+
+    document.addEventListener('keydown', async function (event) {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'o') {
+        await event.preventDefault();
+
+        await Open()
+      }
+    });
+
+    document.addEventListener('keydown', async function (event) {
+      if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 't') {
+        await event.preventDefault();
+
+        await codeVersion()
+      }
+    });
+
+    document.addEventListener('keydown', async function (event) {
+      if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'w') {
+        await event.preventDefault();
+
+        await wysiwyg()
+      }
+    });
   </script>
 
   <div id="titlebar">
