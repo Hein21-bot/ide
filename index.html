@@ -420,6 +420,10 @@
       localStorage.setItem('ideOpen', true)
     })
 
+    window.addEventListener('beforeunload', function () {
+    localStorage.removeItem('ideOpen')
+  });
+
     window.addEventListener('storage', function (event) {
       if (event.key === 'toggleWYSIWYG') {
         const receivedData = event.newValue;
