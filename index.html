@@ -431,6 +431,14 @@
       }
     });
 
+    window.addEventListener('storage', function (event) {
+      if (event.key === 'toggleIDE') {
+        const receivedData = event.newValue;
+        window.close()
+      }
+    });
+
+
     window.onclick = function (event) {
       if (!event.target.matches('.check')) {
         var dropdowns = document.getElementsByClassName("submenu");
@@ -1030,7 +1038,7 @@
     function wysiwyg() {
 
       const sandboxOpen = JSON.parse(localStorage.getItem('sandboxOpen'));
-
+      console.log('sandbox test in index.html', sandboxOpen)
       if (sandboxOpen) {
         const toggleWYSIWYG = JSON.parse(localStorage.getItem('toggleWYSIWYG'));
         localStorage.setItem('toggleWYSIWYG', !toggleWYSIWYG);
@@ -1321,7 +1329,7 @@
 
     document.addEventListener('keydown', function (event) {
       // Check if the pressed key is 'n' and Ctrl (or Command) is pressed
-      if ((event.ctrlKey || event.metaKey)  && event.key === 'n') {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'n') {
         event.preventDefault(); // Prevent the default action (e.g., opening a new window)
 
         createNewFile()
