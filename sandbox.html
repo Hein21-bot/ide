@@ -425,11 +425,18 @@
 
 <body>
   <!-- <script src="index.js"></script> -->
-  
+
   <script>
 
     window.addEventListener('load', function () {
       localStorage.setItem('sandboxOpen', true)
+      const ideOpen = JSON.parse(localStorage.getItem('ideOpen'));
+      var x = document.getElementById('wysiwygoption');
+      if (ideOpen) {
+        x.style.display = "none";
+      } else {
+        x.style.display = "block";
+      }
     })
 
     // Event listener to detect when the result page is closed
