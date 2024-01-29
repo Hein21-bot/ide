@@ -56,11 +56,10 @@ app.get("/runFile", (req, res) => {
 })
 
 app.post("/createFile", async (req, res) => {
-  const content = req.body;
-  const { fileName, dirName } = req.query;
+  // const content = req.body;
+  const { fileName, dirName, content } = req.body;
   try {
     const filePath = path.join(dirName, fileName);
-
     if (fs.existsSync(filePath)) {
       res.status(400).send("Error: Filename already exit!");
     } else {
@@ -151,9 +150,10 @@ function convertTimestamp(timestamp) {
   return new Date(timestamp).toLocaleString();
 }
 
-app.get("/getFolder", async (req, res) => {
+app.post("/getFolder", async (req, res) => {
   // const dirName = "../File-Organizer";
-  const { dirName } = req.query;
+  // const { dirName } = req.query;
+  const { dirName } = req.body
   let data = [];
 
   try {

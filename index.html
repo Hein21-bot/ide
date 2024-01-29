@@ -896,27 +896,27 @@
 
     async function saveData(fullPath, name) {
       const baseUrl = "http://localhost:8080/createFile";
-      const queryParams = {
-        dirName: fullPath,
-        fileName: name,
-      };
-      const urlWithQuery = `${baseUrl}?${new URLSearchParams(
-        queryParams
-      ).toString()}`;
+
       try {
-        const response = await fetch(urlWithQuery, {
+        const bodyData = {
+          dirName: fullPath,
+          fileName: name,
+          content: editor.innerText,
+        };
+
+        const response = await fetch(baseUrl, {
           method: "POST",
           headers: {
-            "Content-Type": "text/html",
+            "Content-Type": "application/json",
           },
-          body: editor.innerText,
+          body: JSON.stringify(bodyData),
         });
+
         if (response.status != 200) {
-          throw new Error(`HTTP error! status: ${response}`);
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-        if (response.status == 200) {
-          window.alert('successfully save!')
-        }
+        const data = await response.json();
+        return data;
       } catch (error) {
         console.error("Fetch Error:", error);
       }

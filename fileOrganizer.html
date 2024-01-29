@@ -397,19 +397,21 @@
 <script>
   let breadcrumbList = ['File Organizer']
   let folderPath;
+
   async function getFolder(dir) {
     const baseUrl = "http://localhost:8080/getFolder";
 
-    const queryParams = {
+    const bodyData = {
       dirName: dir,
     };
 
-    const urlWithQuery = `${baseUrl}?${new URLSearchParams(
-      queryParams
-    ).toString()}`;
     try {
-      const response = await fetch(urlWithQuery, {
-        method: "GET",
+      const response = await fetch(baseUrl, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(bodyData)
       });
       if (response.status != 200) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -446,33 +448,34 @@
 
   async function createFile(fullPath, name) {
     const baseUrl = "http://localhost:8080/createFile";
-    const queryParams = {
-      dirName: fullPath,
-      fileName: name,
-    };
-    const urlWithQuery = `${baseUrl}?${new URLSearchParams(
-      queryParams
-    ).toString()}`;
 
     try {
-      const bodyData = `<!DOCTYPE html>
-      <html>
-      </html>`
-      const response = await fetch(urlWithQuery, {
+      const bodyData = {
+        dirName: fullPath,
+        fileName: name,
+        content: `<!DOCTYPE html>
+                  <html>
+                  </html>`
+      };
+
+      const response = await fetch(baseUrl, {
         method: "POST",
         headers: {
-          "Content-Type": "text/html",
+          "Content-Type": "application/json",
         },
-        body: bodyData,
+        body: JSON.stringify(bodyData),
       });
+
       if (response.status != 200) {
-        throw new Error(`HTTP error! status: ${response}`);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
+      return data;
     } catch (error) {
       console.error("Fetch Error:", error);
     }
   }
+
 
   async function deleteFolder(fullPath) {
     const baseUrl = "http://localhost:8080/deleteFolder";
@@ -507,7 +510,7 @@
   function displayFolderData(folder) {
     if (folder.type == 'Folder') {
 
-      const list = folder.path.split('/')
+      const list = folder.path.split('\\')
       list.shift();
       breadcrumbList = list;
       folderPath = folder.path
@@ -673,13 +676,20 @@
       const name = document.getElementById('name').value + (val === 'file' ? '.html' : '');
 
       if (val === 'file') {
-        console.log(fullPath)
-        createFile(fullPath, name)
-        window.location.reload()
+        if (name == '.html') {
+          window.alert("File name should't be null")
+        } else {
+          createFile(fullPath, name)
+          window.location.reload()
+        }
       } else {
-
-        createFolder(fullPath, name)
-        window.location.reload()
+        console.log('name is ===>', name == '')
+        if (name == '') {
+          window.alert("Folder name should't be null")
+        } else {
+          createFolder(fullPath, name)
+          window.location.reload()
+        }
       }
 
     }
