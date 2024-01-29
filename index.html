@@ -1189,7 +1189,7 @@
     function displayFolderData(folder) {
       if (folder.type == 'Folder') {
 
-        const list = folder.path.split('/')
+        const list = folder.path.split('\\')
         list.shift();
         breadcrumbList = list;
         folderPath = folder.path
