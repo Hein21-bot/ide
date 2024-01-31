@@ -23,6 +23,11 @@ app.use(function (req, res, next) {
   next();
 });
 
+var favicon = require('serve-favicon');
+
+app.use(favicon(__dirname + '/romogi-favicons/favicon.ico'));
+
+
 // Convert fs methods to return promises
 const mkdir = util.promisify(fs.mkdir);
 const writeFile = util.promisify(fs.writeFile);
@@ -196,7 +201,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/ide", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
+  res.sendFile(path.join(__dirname, "ide.html"));
 });
 
 app.get("/run-sandbox", (req, res) => {
@@ -223,6 +228,7 @@ async function autoCreateFolder() {
 }
 
 app.listen(port, async () => {
-  await autoCreateFolder()
+  await autoCreateFolder();
   console.log(`Server running at http://localhost:${port}`);
+  require('child_process').exec(`open http://localhost:${port}/`);
 });
