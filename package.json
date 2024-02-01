@@ -7,6 +7,12 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon Controller.js"
   },
+  "bin": "Controller.js",
+  "pkg": {
+    "assets": [
+      "romogi-favicons/favicon.ico"
+    ]
+  },
   "nodemonConfig": {
     "ignore": [
       "File-Organizer/*"

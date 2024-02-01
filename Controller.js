@@ -25,7 +25,9 @@ app.use(function (req, res, next) {
 
 var favicon = require('serve-favicon');
 
-app.use(favicon(__dirname + '/romogi-favicons/favicon.ico'));
+app.use('/favicon.ico', express.static(path.join(__dirname, 'romogi-favicons/favicon.ico')));
+
+// app.use(favicon(__dirname + '/romogi-favicons/favicon.ico'));
 
 
 // Convert fs methods to return promises
@@ -218,12 +220,33 @@ app.get("/run-sandbox", (req, res) => {
 });
 
 async function autoCreateFolder() {
-  const folderPath = '../File Organizer'
-  if (!(await exists(folderPath))) {
-    await mkdir(folderPath, { recursive: true });
-    console.log('Folder Created!')
-  } else {
-    console.log('Folder already exist!')
+  // const folderPath = '../File Organizer'
+  // if (!(await exists(folderPath))) {
+  //   await mkdir(folderPath, { recursive: true });
+  //   console.log('Folder Created!')
+  // } else {
+  //   console.log('Folder already exist!')
+  // }
+  try {
+    await fs.promises.mkdir('../File Organizer', { recursive: true });
+    console.log('Directory created successfully.');
+  } catch (error) {
+    fs.chmod('../File Organizer', 0o777, (err) => {
+      if (err) {
+          console.error(`Failed to change permissions of ${'../File Organizer'}: ${err}`);
+          return;
+      }
+      console.log(`Permissions of ${'../File Organizer'} changed successfully.`);
+      
+      // Proceed to create the new folder
+      fs.mkdir('../File Organizer', { recursive: true }, (err) => {
+          if (err) {
+              console.error(`Failed to create folder ${'../File Organizer'}: ${err}`);
+              return;
+          }
+          console.log(`Folder ${'../File Organizer'} created successfully.`);
+      });
+  });
   }
 }
 
