@@ -3,7 +3,8 @@ const app = express();
 const fs = require("fs");
 const util = require("util");
 const path = require("path");
-const fsE = require('fs-extra')
+const fsE = require('fs-extra');
+const process = require('process');
 
 const port = 8080;
 app.use(express.json()); // for parsing application/json
@@ -39,8 +40,11 @@ const stat = util.promisify(fs.stat);
 
 app.get("/readFile", (req, res) => {
   const { dirName } = req.query;
+  const newDir = dirName.startsWith('../') ? dirName.slice(dirName.indexOf('../') + 3) : dirName;
+  const newPath = path.join(path.dirname(process.execPath), newDir);
   // const dirName = '../File Organizer/test.html'
-  fs.readFile(dirName, "utf8", (err, data) => {
+  
+  fs.readFile(newPath, "utf8", (err, data) => {
     const result = { data: data }
     if (err) {
       res.status(400).send(err);
@@ -53,7 +57,9 @@ app.get("/readFile", (req, res) => {
 
 app.get("/runFile", (req, res) => {
   const { dirName } = req.query;
-  fs.readFile(dirName, "utf8", (err, data) => {
+  const newDir = dirName.startsWith('../') ? dirName.slice(dirName.indexOf('../') + 3) : dirName;
+  const newPath = path.join(path.dirname(process.execPath), newDir);
+  fs.readFile(newPath, "utf8", (err, data) => {
     const result = data
     if (err) {
       res.status(400).send(err);
@@ -65,8 +71,10 @@ app.get("/runFile", (req, res) => {
 app.post("/createFile", async (req, res) => {
   // const content = req.body;
   const { fileName, dirName, content } = req.body;
+  const newDir = dirName.startsWith('../') ? dirName.slice(dirName.indexOf('../') + 3) : dirName;
   try {
-    const filePath = path.join(dirName, fileName);
+    
+    const filePath = path.join(path.join(path.dirname(process.execPath), newDir), fileName);
     if (fs.existsSync(filePath)) {
       res.status(400).send("Error: Filename already exit!");
     } else {
@@ -81,10 +89,12 @@ app.post("/createFile", async (req, res) => {
 app.post("/updateFile", async (req, res) => {
   const content = req.body;
   const { fileName, dirName } = req.query;
+  const newDir = dirName.startsWith('../') ? dirName.slice(dirName.indexOf('../') + 3) : dirName;
+  const newPath = path.join(path.dirname(process.execPath), newDir);
   try {
-    await writeFile(dirName, content);
+    await writeFile(newPath, content);
 
-    fs.readFile(dirName, (err, data) => {
+    fs.readFile(newPath, (err, data) => {
       if (err) {
         res.writeHead(404);
         res.end("404 Not Found");
@@ -100,7 +110,9 @@ app.post("/updateFile", async (req, res) => {
 
 app.delete("/deleteFile", (req, res) => {
   const { fileName, dirName } = req.query;
-  const filePath = path.join(dirName, fileName);
+  const newDir = dirName.startsWith('../') ? dirName.slice(dirName.indexOf('../') + 3) : dirName;
+  
+  const filePath = path.join(path.join(path.dirname(process.execPath), newDir), fileName);
   fs.unlink(filePath, (err) => {
     if (err) {
       res.status(500).send("Error deleting the file");
@@ -112,8 +124,10 @@ app.delete("/deleteFile", (req, res) => {
 
 app.delete("/deleteFolder", async (req, res) => {
   const { dirName } = req.query
+  const newDir = dirName.startsWith('../') ? dirName.slice(dirName.indexOf('../') + 3) : dirName;
+  const newPath = path.join(path.dirname(process.execPath), newDir);
   // const folderPath = "../File-Organizer/New Folder"
-  await deleteFolderRecursive(dirName)
+  await deleteFolderRecursive(newPath)
     .then(() => res.status(200).send("Folder and all contents deleted!"))
     .catch(error => console.error('Error occurred:', error));
 
@@ -123,16 +137,17 @@ async function deleteFolderRecursive(directoryPath) {
   try {
     await fsE.remove(directoryPath);
     console.log('Folder and all contents deleted.');
-  } catch (errro) {
+  } catch (error) {
     console.error('Error occurred:', error);
   }
 }
 
 app.get("/updateFileName", (req, res) => {
   const { fileName, dirName, oldFileName } = req.query;
-
-  const filePath = path.join(dirName, fileName);
-  const oldFilePath = path.join(dirName, oldFileName);
+  const newDir = dirName.startsWith('../') ? dirName.slice(dirName.indexOf('../') + 3) : dirName;
+  
+  const filePath = path.join(path.join(path.dirname(process.execPath), newDir), fileName);
+  const oldFilePath = path.join(path.join(path.dirname(process.execPath), newDir), oldFileName);
   fs.rename(oldFilePath, filePath, (err) => {
     if (err) {
       console.error("Error occurred:", err);
@@ -144,7 +159,9 @@ app.get("/updateFileName", (req, res) => {
 
 app.get("/createFolder", async (req, res) => {
   const { dirName, folderName } = req.query;
-  const folderPath = path.join(dirName, folderName);
+  const newDir = dirName.startsWith('../') ? dirName.slice(dirName.indexOf('../') + 3) : dirName;
+  
+  const folderPath = path.join(path.join(path.dirname(process.execPath), newDir), folderName);
   if (!(await exists(folderPath))) {
     await mkdir(folderPath, { recursive: true });
     res.status(200).send("Folder Created Successful!");
@@ -158,24 +175,25 @@ function convertTimestamp(timestamp) {
 }
 
 app.post("/getFolder", async (req, res) => {
-  // const dirName = "../File-Organizer";
-  // const { dirName } = req.query;
   const { dirName } = req.body
   let data = [];
 
+  const newDir = dirName.startsWith('../') ? dirName.slice(dirName.indexOf('../') + 3) : dirName;
+  const newPath = path.join(path.dirname(process.execPath), newDir);
+  
   try {
-    const files = await readdir(dirName, { withFileTypes: true });
+    const files = await readdir(newPath, { withFileTypes: true });
 
     // Create an array of promises for each file's details
     const promises = files.map(async (dirent) => {
-      let fullPath = path.join(dirName, dirent.name);
+      let fullPath = path.join(newPath, dirent.name);
       try {
         const stats = await stat(fullPath);
 
         // Constructing the details
         return {
           name: dirent.name,
-          path: fullPath,
+          path: path.join(newDir, dirent.name),
           type: dirent.isDirectory() ? "Folder" : "File",
           size: stats.size + " bytes",
           createdAt: convertTimestamp(stats.birthtimeMs), // Creation time
@@ -220,34 +238,24 @@ app.get("/run-sandbox", (req, res) => {
 });
 
 async function autoCreateFolder() {
-  // const folderPath = '../File Organizer'
-  // if (!(await exists(folderPath))) {
-  //   await mkdir(folderPath, { recursive: true });
-  //   console.log('Folder Created!')
-  // } else {
-  //   console.log('Folder already exist!')
-  // }
-  try {
-    await fs.promises.mkdir('../File Organizer', { recursive: true });
-    console.log('Directory created successfully.');
-  } catch (error) {
-    fs.chmod('../File Organizer', 0o777, (err) => {
-      if (err) {
-          console.error(`Failed to change permissions of ${'../File Organizer'}: ${err}`);
-          return;
-      }
-      console.log(`Permissions of ${'../File Organizer'} changed successfully.`);
-      
-      // Proceed to create the new folder
-      fs.mkdir('../File Organizer', { recursive: true }, (err) => {
-          if (err) {
-              console.error(`Failed to create folder ${'../File Organizer'}: ${err}`);
-              return;
-          }
-          console.log(`Folder ${'../File Organizer'} created successfully.`);
-      });
-  });
-  }
+  const folderPath = 'File Organizer';
+
+    // Determine the target directory path based on the environment
+    const targetDir = path.join(path.dirname(process.execPath), folderPath)
+    
+    // Check if the directory exists
+    if (!fs.existsSync(targetDir)) {
+        // Create the directory if it doesn't exist
+        fs.mkdir(targetDir, { recursive: true }, (err) => {
+            if (err) {
+                console.error(`Failed to create folder "${targetDir}": ${err}`);
+            } else {
+                console.log(`Folder "${targetDir}" created successfully.`);
+            }
+        });
+    } else {
+        console.log(`Folder "${targetDir}" already exists.`);
+    }
 }
 
 app.listen(port, async () => {

@@ -1177,8 +1177,8 @@
         } else {
           const fullPath = '../' + breadcrumbList.join('/');
           const name = fileName + ('.html')
-          saveData(folderPath == undefined ? fullPath : folderPath, name)
-          localStorage.setItem('file-loc', JSON.stringify(`${folderPath == undefined ? fullPath : folderPath}/${name}`));
+          saveData(fullPath, name)
+          localStorage.setItem('file-loc', JSON.stringify(`${fullPath}/${name}`));
           window.location.reload()
         }
 
@@ -1189,8 +1189,10 @@
     function displayFolderData(folder) {
       if (folder.type == 'Folder') {
 
-        const list = folder.path.split('\\')
-        list.shift();
+        const list = folder.path.split('\/');
+        if(list[0]==='..'){
+          list.shift();
+        }
         breadcrumbList = list;
         folderPath = folder.path
         handleLoadBreadcrumb();
@@ -1254,24 +1256,25 @@
     async function getFiles(dir) {
       const baseUrl = "http://localhost:8080/getFolder";
 
-      const queryParams = {
+      const bodyData = {
         dirName: dir,
       };
 
-      const urlWithQuery = `${baseUrl}?${new URLSearchParams(
-        queryParams
-      ).toString()}`;
       try {
-        const response = await fetch(urlWithQuery, {
-          method: "GET",
-        });
-        if (response.status != 200) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      } catch (error) {
-        console.error("Fetch Error:", error);
+      const response = await fetch(baseUrl, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(bodyData)
+      });
+      if (response.status != 200) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      return response.json();
+    } catch (error) {
+      console.error("Fetch Error:", error);
+    }
     }
 
     async function createElement(data) {

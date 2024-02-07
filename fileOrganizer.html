@@ -509,9 +509,12 @@
 
   function displayFolderData(folder) {
     if (folder.type == 'Folder') {
-
-      const list = folder.path.split('\\')
-      list.shift();
+      
+      const list = folder.path.split('\/');
+      if(list[0]==='..'){
+        list.shift();
+      }
+      
       breadcrumbList = list;
       folderPath = folder.path
       handleLoadBreadcrumb();
@@ -586,6 +589,7 @@
   function handleLoadBreadcrumb() {
     const breadcrumb_ele = document.getElementById('breadcrumb');
     breadcrumb_ele.replaceChildren();
+    console.log('breadcrumbList', breadcrumbList)
     for (let i = 0; i < breadcrumbList.length; i++) {
       const folder_name = breadcrumbList[i];
 
