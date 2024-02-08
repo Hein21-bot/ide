@@ -1189,7 +1189,10 @@
     function displayFolderData(folder) {
       if (folder.type == 'Folder') {
 
-        const list = folder.path.split('\/');
+      const partsForwardSlash = folder.path.split('/');
+      const partsBackSlash = folder.path.split('\\');
+      
+      const list = partsForwardSlash.length > partsBackSlash.length ? partsForwardSlash : partsBackSlash;
         if(list[0]==='..'){
           list.shift();
         }
